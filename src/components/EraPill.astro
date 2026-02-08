@@ -4,27 +4,22 @@ import type { CollectionEntry } from "astro:content";
 interface Props {
   era: CollectionEntry<"eras">;
   linked?: boolean;
+  variant?: 'default' | 'light';
 }
 
-const { era, linked = true } = Astro.props;
-const hue = era.data.color;
+const { era, linked = true, variant = 'default' } = Astro.props;
+const Tag = linked ? 'a' : 'span';
 ---
 
-{
-  linked ? (
-    <a
-      href={`/eras/${era.slug}/`}
-      class="inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.08em]"
-      style={`border-color:${hue}; color:${hue}; background-color:${hue}1f;`}
-    >
-      {era.data.name}
-    </a>
-  ) : (
-    <span
-      class="inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.08em]"
-      style={`border-color:${hue}; color:${hue}; background-color:${hue}1f;`}
-    >
-      {era.data.name}
-    </span>
-  )
-}
+<Tag
+  href={linked ? `/eras/${era.slug}/` : undefined}
+  class:list={[
+    'inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold uppercase tracking-wider transition-colors',
+    variant === 'light'
+      ? 'bg-white/15 text-white/90 hover:bg-white/25'
+      : 'bg-amber-50 text-amber-700 hover:bg-amber-100',
+    linked && 'cursor-pointer',
+  ]}
+>
+  {era.data.name}
+</Tag>

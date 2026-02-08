@@ -9,30 +9,27 @@ const [notes, locations, eras] = await Promise.all([
   getCollection("eras"),
 ]);
 
-const notesSorted = [...notes].sort(
-  (a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime(),
-);
-const locationById = new Map(locations.map((location) => [location.id, location]));
-const erasById = new Map(eras.map((era) => [era.id, era]));
+const notesSorted = [...notes].sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime());
+const locationById = new Map(locations.map((l) => [l.id, l]));
+const erasById = new Map(eras.map((e) => [e.id, e]));
 ---
 
-<BaseLayout
-  title="Field Notes | Bóinne"
-  description="All linked field notes for discoveries across the Boyne Valley."
->
-  <section class="section-shell mt-10 space-y-5 sm:mt-12">
-    <p class="chip">Field Notes</p>
-    <h1 class="text-5xl text-stone-900 sm:text-6xl">Research Journal</h1>
-    <p class="max-w-3xl text-sm text-stone-700 sm:text-base">
-      Every note links to a location and one or more eras, so this index is both a journal and a relational graph.
-    </p>
-  </section>
-
-  <section class="section-shell mt-8 pb-4">
-    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      {notesSorted.map((note) => (
-        <NoteCard note={note} locationById={locationById} erasById={erasById} />
-      ))}
+<BaseLayout title="Journal | Bóinne" description="Writings and explorations across the Boyne Valley">
+  <section class="px-6 pt-24 pb-20">
+    <div class="max-w-7xl mx-auto">
+      <div class="max-w-2xl mb-14">
+        <p class="text-xs font-semibold uppercase tracking-wider text-amber-700 mb-3">Read</p>
+        <h1 class="text-4xl sm:text-5xl font-bold text-stone-900">Journal</h1>
+        <p class="mt-4 text-lg text-stone-500 leading-relaxed">
+          Explorations, histories, and reflections from across the Boyne Valley.
+          Each entry is a window into a different time and place.
+        </p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {notesSorted.map(note => (
+          <NoteCard note={note} locationById={locationById} erasById={erasById} />
+        ))}
+      </div>
     </div>
   </section>
 </BaseLayout>

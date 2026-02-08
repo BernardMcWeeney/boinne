@@ -4,82 +4,76 @@ import type { CollectionEntry } from "astro:content";
 interface Props {
   locations: CollectionEntry<"locations">[];
   noteCounts: Record<string, number>;
+  height?: string;
 }
 
-const { locations, noteCounts } = Astro.props;
+const { locations, noteCounts, height = '500px' } = Astro.props;
 
-const lats = locations.map((location) => location.data.lat);
-const lngs = locations.map((location) => location.data.lng);
-
-const minLat = Math.min(...lats);
-const maxLat = Math.max(...lats);
-const minLng = Math.min(...lngs);
-const maxLng = Math.max(...lngs);
-
-const latSpan = maxLat - minLat || 1;
-const lngSpan = maxLng - minLng || 1;
-
-const points = locations.map((location) => {
-  const x = 110 + ((location.data.lng - minLng) / lngSpan) * 780;
-  const y = 520 - ((location.data.lat - minLat) / latSpan) * 390;
-  return {
-    location,
-    x,
-    y,
-    notes: noteCounts[location.id] ?? 0,
-  };
-});
+const mapData = locations.map(loc => ({
+  name: loc.data.name,
+  slug: loc.slug,
+  teaser: loc.data.teaser,
+  lat: loc.data.lat,
+  lng: loc.data.lng,
+  notes: noteCounts[loc.id] ?? 0,
+}));
 ---
 
-<div class="landscape-frame border border-white/50 bg-gradient-to-b from-[#edf5f3] via-[#e8e7de] to-[#e7dcc8]">
-  <svg viewBox="0 0 1000 620" class="h-auto w-full">
-    <defs>
-      <linearGradient id="river" x1="0%" y1="0%" x2="100%" y2="0%">
-        <stop offset="0%" stop-color="#7fa8b2" />
-        <stop offset="100%" stop-color="#4d7a89" />
-      </linearGradient>
-      <radialGradient id="glow" cx="50%" cy="45%" r="58%">
-        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9" />
-        <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
-      </radialGradient>
-    </defs>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
-    <rect x="0" y="0" width="1000" height="620" fill="url(#glow)" />
+<div
+  id="boinne-map"
+  class="rounded-xl overflow-hidden shadow-sm border border-stone-200/60"
+  style={`height: ${height}; width: 100%;`}
+  data-locations={JSON.stringify(mapData)}
+></div>
 
-    <path
-      d="M 40 470 C 160 510, 240 380, 340 420 C 450 470, 550 380, 640 420 C 760 470, 860 380, 980 430"
-      fill="none"
-      stroke="url(#river)"
-      stroke-width="24"
-      stroke-linecap="round"
-      opacity="0.55"
-    />
+<script is:inline src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script is:inline>
+document.addEventListener('DOMContentLoaded', function() {
+  var mapEl = document.getElementById('boinne-map');
+  if (!mapEl || mapEl.dataset.initialized) return;
+  mapEl.dataset.initialized = 'true';
 
-    {points.map((point) => (
-      <a href={`/locations/${point.location.slug}/`}>
-        <circle cx={point.x} cy={point.y} r="16" fill="#173142" opacity="0.15" />
-        <circle cx={point.x} cy={point.y} r="10" fill="#173142" />
-        <circle cx={point.x} cy={point.y} r="4" fill="#ffffff" />
-        <text
-          x={point.x + 15}
-          y={point.y - 12}
-          fill="#1d1d1b"
-          font-size="14"
-          font-family="Manrope, sans-serif"
-          font-weight="600"
-        >
-          {point.location.data.name}
-        </text>
-        <text
-          x={point.x + 15}
-          y={point.y + 10}
-          fill="#4b5563"
-          font-size="12"
-          font-family="Manrope, sans-serif"
-        >
-          {point.notes} notes logged
-        </text>
-      </a>
-    ))}
-  </svg>
-</div>
+  var locations = JSON.parse(mapEl.dataset.locations || '[]');
+
+  var center = [53.7, -6.48];
+  var zoom = 12;
+  if (locations.length === 1) {
+    center = [locations[0].lat, locations[0].lng];
+    zoom = 14;
+  }
+
+  var map = L.map('boinne-map', { scrollWheelZoom: false }).setView(center, zoom);
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>',
+    maxZoom: 18,
+  }).addTo(map);
+
+  var markerIcon = L.divIcon({
+    className: 'boinne-marker',
+    html: '<div style="width:14px;height:14px;background:#b45309;border:3px solid #fff;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,0.2);"></div>',
+    iconSize: [14, 14],
+    iconAnchor: [7, 7],
+    popupAnchor: [0, -10],
+  });
+
+  var bounds = [];
+  locations.forEach(function(loc) {
+    var marker = L.marker([loc.lat, loc.lng], { icon: markerIcon }).addTo(map);
+    marker.bindPopup(
+      '<div style="font-family:Inter,system-ui,sans-serif;min-width:180px;padding:6px 0;">' +
+        '<strong style="font-size:15px;color:#1c1917;font-weight:700;">' + loc.name + '</strong><br>' +
+        '<span style="font-size:13px;color:#78716c;line-height:1.5;display:block;margin:6px 0 10px;">' + loc.teaser + '</span>' +
+        '<a href="/locations/' + loc.slug + '/" style="color:#b45309;font-size:13px;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:4px;">Explore <span style="font-size:16px;">&rarr;</span></a>' +
+      '</div>'
+    );
+    bounds.push([loc.lat, loc.lng]);
+  });
+
+  if (bounds.length > 1) {
+    map.fitBounds(bounds, { padding: [50, 50] });
+  }
+});
+</script>

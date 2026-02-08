@@ -9,7 +9,7 @@ const [locations, notes, eras] = await Promise.all([
   getCollection("eras"),
 ]);
 
-const erasById = new Map(eras.map((era) => [era.id, era]));
+const erasById = new Map(eras.map((e) => [e.id, e]));
 const noteCounts = notes.reduce<Record<string, number>>((acc, note) => {
   const key = note.data.location.id;
   acc[key] = (acc[key] ?? 0) + 1;
@@ -19,24 +19,22 @@ const noteCounts = notes.reduce<Record<string, number>>((acc, note) => {
 const sortedLocations = [...locations].sort((a, b) => a.data.name.localeCompare(b.data.name));
 ---
 
-<BaseLayout
-  title="Locations | Bóinne"
-  description="All mapped and documented Boyne Valley locations in your Bóinne archive."
->
-  <section class="section-shell mt-10 space-y-5 sm:mt-12">
-    <p class="chip">Locations</p>
-    <h1 class="text-5xl text-stone-900 sm:text-6xl">Site Index</h1>
-    <p class="max-w-3xl text-sm text-stone-700 sm:text-base">
-      Each location can hold multiple eras and many linked notes. This is your central register for monuments, ruins,
-      and landscape points.
-    </p>
-  </section>
-
-  <section class="section-shell mt-8 pb-4">
-    <div class="grid gap-6 md:grid-cols-2">
-      {sortedLocations.map((location) => (
-        <LocationCard location={location} erasById={erasById} noteCount={noteCounts[location.id] ?? 0} />
-      ))}
+<BaseLayout title="Locations | Bóinne" description="Explore the ancient sites of the Boyne Valley">
+  <section class="px-6 pt-24 pb-20">
+    <div class="max-w-7xl mx-auto">
+      <div class="max-w-2xl mb-14">
+        <p class="text-xs font-semibold uppercase tracking-wider text-amber-700 mb-3">Explore</p>
+        <h1 class="text-4xl sm:text-5xl font-bold text-stone-900">Locations</h1>
+        <p class="mt-4 text-lg text-stone-500 leading-relaxed">
+          From Neolithic passage tombs older than the pyramids to medieval castles
+          and battlefields that shaped a nation. Every site has a story.
+        </p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {sortedLocations.map(loc => (
+          <LocationCard location={loc} erasById={erasById} noteCount={noteCounts[loc.id] ?? 0} />
+        ))}
+      </div>
     </div>
   </section>
 </BaseLayout>

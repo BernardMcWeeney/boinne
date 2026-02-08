@@ -2,11 +2,12 @@
 import type { CollectionEntry } from "astro:content";
 import { getCollection, getEntries, getEntry, render } from "astro:content";
 import EraPill from "../../components/EraPill.astro";
+import NoteCard from "../../components/NoteCard.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getLocationGradient } from "../../lib/images";
 
 export async function getStaticPaths() {
   const notes = await getCollection("posts");
-
   return notes.map((post) => ({
     params: { slug: post.slug },
     props: { post },
@@ -16,79 +17,91 @@ export async function getStaticPaths() {
 const { post } = Astro.props as { post: CollectionEntry<"posts"> };
 const { Content } = await render(post);
 
-const [location, allEras] = await Promise.all([
+const [location, allEras, allLocations, allNotes] = await Promise.all([
   getEntry(post.data.location),
   getCollection("eras"),
+  getCollection("locations"),
+  getCollection("posts"),
 ]);
 
-const erasById = new Map(allEras.map((era) => [era.id, era]));
+const erasById = new Map(allEras.map((e) => [e.id, e]));
+const locationById = new Map(allLocations.map((l) => [l.id, l]));
+
 const linkedEras = post.data.eras
   .map((ref) => erasById.get(ref.id))
   .filter((era): era is CollectionEntry<"eras"> => Boolean(era));
 
 const relatedNotes = post.data.related.length ? await getEntries(post.data.related) : [];
 
-if (!location) {
-  throw new Error(`Location not found for post ${post.slug}`);
-}
+if (!location) throw new Error(`Location not found for post ${post.slug}`);
+
+const gradient = getLocationGradient(location.slug);
+
+const formattedDate = post.data.publishedAt.toLocaleDateString('en-IE', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
 ---
 
-<BaseLayout title={`${post.data.title} | Bóinne`} description={post.data.excerpt} image={post.data.heroImage}>
-  <section class="section-shell mt-8 space-y-6 sm:mt-12">
-    <div class="landscape-frame relative min-h-[20rem] overflow-hidden">
-      <img src={post.data.heroImage} alt={post.data.title} class="absolute inset-0 h-full w-full object-cover" />
-      <div class="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent"></div>
-      <div class="relative z-10 flex h-full flex-col justify-end gap-3 p-6 text-white sm:p-9 lg:max-w-3xl">
-        <p class="chip border-white/35 bg-white/15 text-white">{location.data.name}</p>
-        <h1 class="text-4xl sm:text-5xl">{post.data.title}</h1>
-        <p class="max-w-2xl text-sm text-white/90 sm:text-base">{post.data.excerpt}</p>
+<BaseLayout title={`${post.data.title} | Bóinne`} description={post.data.excerpt} darkHeader={true}>
+  <!-- Hero -->
+  <section class="relative min-h-[45vh] flex items-end overflow-hidden placeholder-shimmer" style={`background: ${gradient};`}>
+    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+    <div class="relative z-10 w-full max-w-7xl mx-auto px-6 pb-12 pt-32">
+      <div class="flex items-center gap-3 mb-4 flex-wrap">
+        {linkedEras.map(era => (
+          <EraPill era={era} variant="light" />
+        ))}
+        <a href={`/locations/${location.slug}/`} class="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-white/60 hover:text-white transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3.5 h-3.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+          </svg>
+          {location.data.name}
+        </a>
       </div>
-    </div>
-
-    <div class="grid gap-6 lg:grid-cols-[2fr_1fr]">
-      <article class="glass-card p-6 sm:p-8">
-        <div class="flex flex-wrap items-center gap-3 text-xs font-semibold uppercase tracking-[0.08em] text-stone-600">
-          <span>{post.data.publishedAt.toLocaleDateString("en-IE", { dateStyle: "long" })}</span>
-          <span>•</span>
-          <span>{post.data.discoveryType.replace("-", " ")}</span>
-        </div>
-        <div class="mt-4 space-y-4 text-sm text-stone-700 sm:text-base">
-          <Content />
-        </div>
-      </article>
-
-      <aside class="space-y-4">
-        <section class="glass-card p-5">
-          <h2 class="text-3xl text-stone-900">Linked Location</h2>
-          <a href={`/locations/${location.slug}/`} class="mt-2 block text-sm font-semibold text-river underline decoration-2 underline-offset-4">
-            {location.data.name} →
-          </a>
-        </section>
-
-        <section class="glass-card p-5">
-          <h2 class="text-3xl text-stone-900">Eras</h2>
-          <div class="mt-3 flex flex-wrap gap-2">
-            {linkedEras.map((era) => <EraPill era={era} />)}
-          </div>
-        </section>
-      </aside>
+      <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-white leading-tight max-w-4xl">{post.data.title}</h1>
+      <time class="block mt-4 text-sm text-white/50" datetime={post.data.publishedAt.toISOString()}>{formattedDate}</time>
     </div>
   </section>
 
-  {
-    relatedNotes.length > 0 && (
-      <section class="section-shell mt-14 pb-4">
-        <h2 class="text-4xl text-stone-900">Related Notes</h2>
-        <div class="mt-4 grid gap-4 md:grid-cols-2">
-          {relatedNotes.map((related) => (
-            <a href={`/notes/${related.slug}/`} class="glass-card block p-5 transition hover:-translate-y-0.5">
-              <p class="text-xs font-semibold uppercase tracking-[0.08em] text-stone-500">Field note</p>
-              <h3 class="mt-1 text-3xl text-stone-900">{related.data.title}</h3>
-              <p class="mt-2 text-sm text-stone-700">{related.data.excerpt}</p>
-            </a>
+  <!-- Content -->
+  <article class="px-6 py-16">
+    <div class="max-w-3xl mx-auto">
+      <div class="prose">
+        <Content />
+      </div>
+    </div>
+  </article>
+
+  <!-- Location link -->
+  <section class="px-6 pb-12">
+    <div class="max-w-3xl mx-auto">
+      <a href={`/locations/${location.slug}/`} class="group flex items-center gap-4 p-5 bg-stone-50 border border-stone-200 rounded-xl hover:border-amber-300 hover:shadow-sm transition-all">
+        <div class="flex-shrink-0 w-14 h-14 rounded-lg overflow-hidden" style={`background: ${gradient};`} />
+        <div class="flex-1 min-w-0">
+          <p class="text-[11px] font-semibold uppercase tracking-wider text-stone-400">Location</p>
+          <p class="text-base font-bold text-stone-900 group-hover:text-amber-700 transition-colors">{location.data.name}</p>
+        </div>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-stone-300 group-hover:text-amber-600 group-hover:translate-x-0.5 transition-all">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+        </svg>
+      </a>
+    </div>
+  </section>
+
+  <!-- Related -->
+  {relatedNotes.length > 0 && (
+    <section class="px-6 pb-20">
+      <div class="max-w-7xl mx-auto">
+        <h2 class="text-xs font-semibold uppercase tracking-wider text-stone-400 mb-8 pb-4 border-b border-stone-200">Related Writings</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {relatedNotes.map(related => (
+            <NoteCard note={related} locationById={locationById} erasById={erasById} />
           ))}
         </div>
-      </section>
-    )
-  }
+      </div>
+    </section>
+  )}
 </BaseLayout>

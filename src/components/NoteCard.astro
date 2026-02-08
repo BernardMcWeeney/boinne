@@ -1,6 +1,7 @@
 ---
 import type { CollectionEntry } from "astro:content";
 import EraPill from "./EraPill.astro";
+import { getLocationGradient } from "../lib/images";
 
 interface Props {
   note: CollectionEntry<"posts">;
@@ -14,27 +15,48 @@ const noteLocation = locationById.get(note.data.location.id);
 const noteEras = note.data.eras
   .map((ref) => erasById.get(ref.id))
   .filter((era): era is CollectionEntry<"eras"> => Boolean(era));
+
+const locationSlug = noteLocation?.slug ?? '';
+const gradient = getLocationGradient(locationSlug);
+
+const formattedDate = note.data.publishedAt.toLocaleDateString('en-IE', {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
+});
 ---
 
-<article class="glass-card flex h-full flex-col gap-4 p-5">
-  <img
-    src={note.data.heroImage}
-    alt={note.data.title}
-    class="landscape-frame h-44 w-full object-cover"
-    loading="lazy"
-  />
-  <div class="space-y-2">
-    <p class="text-xs font-semibold uppercase tracking-[0.1em] text-stone-600">
-      {noteLocation ? noteLocation.data.name : "Unknown location"}
-      • {note.data.publishedAt.toLocaleDateString("en-IE", { dateStyle: "long" })}
-    </p>
-    <h3 class="text-3xl leading-tight text-stone-900">{note.data.title}</h3>
-    <p class="text-sm text-stone-700">{note.data.excerpt}</p>
+<a
+  href={`/notes/${note.slug}/`}
+  class="group block rounded-xl overflow-hidden bg-white border border-stone-200/80 hover:shadow-lg hover:shadow-stone-200/50 hover:-translate-y-0.5 transition-all duration-300"
+>
+  <div
+    class="relative h-40 overflow-hidden placeholder-shimmer"
+    style={`background: ${gradient};`}
+  >
+    <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
+    <div class="absolute bottom-3 left-4 right-4">
+      <div class="flex items-center gap-2 text-white/70 text-xs">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3.5 h-3.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+        </svg>
+        <span>{noteLocation?.data.name ?? 'Unknown'}</span>
+      </div>
+    </div>
   </div>
-  <div class="flex flex-wrap gap-2">
-    {noteEras.map((era) => <EraPill era={era} />)}
+  <div class="p-5">
+    <div class="flex flex-wrap gap-1.5 mb-3">
+      {noteEras.map(era => (
+        <EraPill era={era} linked={false} />
+      ))}
+    </div>
+    <h3 class="text-base font-bold text-stone-900 group-hover:text-amber-700 transition-colors leading-snug">
+      {note.data.title}
+    </h3>
+    <p class="mt-2 text-sm text-stone-500 leading-relaxed line-clamp-2">{note.data.excerpt}</p>
+    <time class="block mt-3 text-xs text-stone-400" datetime={note.data.publishedAt.toISOString()}>
+      {formattedDate}
+    </time>
   </div>
-  <a href={`/notes/${note.slug}/`} class="mt-auto text-sm font-semibold text-river underline decoration-2 underline-offset-4">
-    Read note
-  </a>
-</article>
+</a>

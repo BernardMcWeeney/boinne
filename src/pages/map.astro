@@ -1,16 +1,12 @@
 ---
 import { getCollection } from "astro:content";
 import DiscoveryMap from "../components/DiscoveryMap.astro";
-import EraPill from "../components/EraPill.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 
-const [locations, notes, eras] = await Promise.all([
+const [locations, notes] = await Promise.all([
   getCollection("locations"),
   getCollection("posts"),
-  getCollection("eras"),
 ]);
-
-const erasById = new Map(eras.map((era) => [era.id, era]));
 
 const noteCounts = notes.reduce<Record<string, number>>((acc, note) => {
   const key = note.data.location.id;
@@ -21,51 +17,46 @@ const noteCounts = notes.reduce<Record<string, number>>((acc, note) => {
 const locationsSorted = [...locations].sort((a, b) => a.data.name.localeCompare(b.data.name));
 ---
 
-<BaseLayout
-  title="Discovery Map | Bóinne"
-  description="Map every Boyne Valley location with linked historical notes and eras."
->
-  <section class="section-shell mt-10 space-y-6 sm:mt-12">
-    <div class="space-y-3">
-      <p class="chip">Map View</p>
-      <h1 class="text-5xl text-stone-900 sm:text-6xl">Discovery Map</h1>
-      <p class="max-w-3xl text-sm text-stone-700 sm:text-base">
-        Locations are positioned from latitude and longitude in your content files. Each marker shows how many linked
-        field notes have been published.
-      </p>
+<BaseLayout title="Map | Bóinne" description="Interactive map of every Boyne Valley location.">
+  <section class="px-6 pt-24 pb-8">
+    <div class="max-w-7xl mx-auto">
+      <div class="max-w-2xl mb-10">
+        <p class="text-xs font-semibold uppercase tracking-wider text-amber-700 mb-3">Navigate</p>
+        <h1 class="text-4xl sm:text-5xl font-bold text-stone-900">Discovery Map</h1>
+        <p class="mt-4 text-lg text-stone-500 leading-relaxed">
+          Every site in the Boyne Valley, mapped from coordinates in the content
+          files. Click a marker to explore.
+        </p>
+      </div>
     </div>
-    <DiscoveryMap locations={locationsSorted} noteCounts={noteCounts} />
   </section>
 
-  <section class="section-shell mt-12 space-y-5 pb-4">
-    <h2 class="text-4xl text-stone-900">Site Register</h2>
-    <div class="grid gap-4 md:grid-cols-2">
-      {locationsSorted.map((location) => {
-        const linkedEras = location.data.eras
-          .map((ref) => erasById.get(ref.id))
-          .filter((era) => Boolean(era));
+  <section class="px-6 pb-20">
+    <div class="max-w-7xl mx-auto">
+      <DiscoveryMap locations={locationsSorted} noteCounts={noteCounts} height="600px" />
+    </div>
+  </section>
 
-        return (
-          <article class="glass-card p-5">
-            <div class="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <h3 class="text-3xl text-stone-900">
-                  <a href={`/locations/${location.slug}/`}>{location.data.name}</a>
-                </h3>
-                <p class="text-sm text-stone-600">{location.data.county}</p>
-              </div>
-              <span class="chip">{noteCounts[location.id] ?? 0} notes</span>
+  <!-- Site list -->
+  <section class="px-6 pb-20 bg-stone-50">
+    <div class="max-w-7xl mx-auto pt-16">
+      <h2 class="text-xs font-semibold uppercase tracking-wider text-stone-400 mb-8 pb-4 border-b border-stone-200">All Sites</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {locationsSorted.map((location) => (
+          <a href={`/locations/${location.slug}/`} class="group flex items-center gap-4 p-4 bg-white border border-stone-200 rounded-xl hover:border-amber-300 hover:shadow-sm transition-all">
+            <div class="flex-1 min-w-0">
+              <p class="font-bold text-stone-900 group-hover:text-amber-700 transition-colors">{location.data.name}</p>
+              <p class="text-sm text-stone-500 mt-0.5">{location.data.county}</p>
             </div>
-            <p class="mt-3 text-sm text-stone-700">{location.data.teaser}</p>
-            <p class="mt-3 text-xs font-semibold uppercase tracking-[0.08em] text-stone-500">
-              {location.data.lat.toFixed(4)}, {location.data.lng.toFixed(4)}
-            </p>
-            <div class="mt-4 flex flex-wrap gap-2">
-              {linkedEras.map((era) => era && <EraPill era={era} />)}
+            <div class="flex items-center gap-3 text-xs text-stone-400">
+              <span>{noteCounts[location.id] ?? 0} notes</span>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 text-stone-300 group-hover:text-amber-600 group-hover:translate-x-0.5 transition-all">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+              </svg>
             </div>
-          </article>
-        );
-      })}
+          </a>
+        ))}
+      </div>
     </div>
   </section>
 </BaseLayout>

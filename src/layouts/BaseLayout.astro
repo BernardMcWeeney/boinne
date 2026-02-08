@@ -5,59 +5,141 @@ interface Props {
   title?: string;
   description?: string;
   image?: string;
+  darkHeader?: boolean;
 }
 
 const {
-  title = "Bóinne | Boyne Valley Field Archive",
-  description = "A personal, interconnected history atlas for the Boyne Valley.",
+  title = "Bóinne | Boyne Valley History",
+  description = "Exploring the ancient landscape of the Boyne Valley",
   image = "/images/hero-boyne.svg",
+  darkHeader = false,
 } = Astro.props;
 
 const site = Astro.site ?? new URL(Astro.url.origin);
 const canonical = new URL(Astro.url.pathname, site);
 const ogImage = new URL(image, site);
+const currentPath = Astro.url.pathname;
+
+const navLinks = [
+  { href: '/locations/', label: 'Locations' },
+  { href: '/eras/', label: 'Eras' },
+  { href: '/notes/', label: 'Journal' },
+  { href: '/map/', label: 'Map' },
+];
 ---
 
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title}</title>
-    <meta name="description" content={description} />
-    <link rel="canonical" href={canonical} />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    <meta property="og:image" content={ogImage} />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content={canonical} />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="theme-color" content="#e7dfcf" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body class="text-stone-900 antialiased">
-    <header class="sticky top-0 z-40 border-b border-white/40 bg-parchment/70 backdrop-blur-lg">
-      <div class="section-shell flex items-center justify-between gap-4 py-3">
-        <a href="/" class="text-3xl font-semibold tracking-wide text-stone-900">Bóinne</a>
-        <nav class="flex flex-wrap items-center gap-1">
-          <a class="nav-link" href="/locations/">Locations</a>
-          <a class="nav-link" href="/eras/">Eras</a>
-          <a class="nav-link" href="/notes/">Field Notes</a>
-          <a class="nav-link" href="/map/">Map</a>
-        </nav>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <link rel="canonical" href={canonical} />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:image" content={ogImage} />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content={canonical} />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Inter:wght@300..700&display=swap" rel="stylesheet" />
+</head>
+<body class="min-h-screen flex flex-col">
+  <header
+    id="site-header"
+    class:list={[
+      'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
+      darkHeader ? 'header--dark' : 'header--light',
+    ]}
+  >
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="/" class="font-display text-2xl font-bold tracking-tight transition-colors header-brand">Bóinne</a>
+      <nav class="hidden md:flex items-center gap-1">
+        {navLinks.map(link => (
+          <a href={link.href} class:list={['px-4 py-2 text-sm font-medium rounded-full transition-all duration-200', currentPath.startsWith(link.href) ? 'header-link--active' : 'header-link']}>
+            {link.label}
+          </a>
+        ))}
+      </nav>
+      <button id="menu-toggle" class="md:hidden p-2 -mr-2 rounded-lg transition-colors header-toggle" aria-label="Menu">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5" />
+        </svg>
+      </button>
+    </div>
+    <div id="mobile-menu" class="hidden md:hidden border-t border-stone-200/10">
+      <nav class="max-w-7xl mx-auto px-6 py-4 flex flex-col gap-1">
+        {navLinks.map(link => (
+          <a href={link.href} class:list={['px-4 py-3 text-sm font-medium rounded-lg transition-colors', currentPath.startsWith(link.href) ? 'text-amber-600 bg-amber-50' : 'text-stone-600 hover:bg-stone-100']}>
+            {link.label}
+          </a>
+        ))}
+      </nav>
+    </div>
+  </header>
+
+  <main class="flex-1"><slot /></main>
+
+  <footer class="bg-stone-900 text-stone-400 mt-auto">
+    <div class="max-w-7xl mx-auto px-6 py-20">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
+        <div class="md:col-span-2">
+          <a href="/" class="font-display text-3xl font-bold text-white hover:text-amber-400 transition-colors">Bóinne</a>
+          <p class="mt-4 text-sm leading-relaxed max-w-md">A personal exploration of the history, monuments, and stories of the Boyne Valley in County Meath, Ireland.</p>
+        </div>
+        <div>
+          <h3 class="text-xs font-semibold uppercase tracking-wider text-stone-500 mb-4">Explore</h3>
+          <nav class="flex flex-col gap-2.5">
+            <a href="/locations/" class="text-sm hover:text-white transition-colors">Locations</a>
+            <a href="/eras/" class="text-sm hover:text-white transition-colors">Eras</a>
+            <a href="/notes/" class="text-sm hover:text-white transition-colors">Journal</a>
+            <a href="/map/" class="text-sm hover:text-white transition-colors">Map</a>
+          </nav>
+        </div>
+        <div>
+          <h3 class="text-xs font-semibold uppercase tracking-wider text-stone-500 mb-4">Key Sites</h3>
+          <nav class="flex flex-col gap-2.5">
+            <a href="/locations/newgrange/" class="text-sm hover:text-white transition-colors">Newgrange</a>
+            <a href="/locations/knowth/" class="text-sm hover:text-white transition-colors">Knowth</a>
+            <a href="/locations/dowth/" class="text-sm hover:text-white transition-colors">Dowth</a>
+            <a href="/locations/slane-castle/" class="text-sm hover:text-white transition-colors">Slane Castle</a>
+          </nav>
+        </div>
       </div>
-    </header>
-    <main><slot /></main>
-    <footer class="mt-24 border-t border-stone-900/10 bg-white/55 py-10">
-      <div class="section-shell flex flex-col gap-3 text-sm text-stone-700 sm:flex-row sm:items-center sm:justify-between">
-        <p class="text-xl font-semibold text-stone-900">Bóinne</p>
-        <p>Boyne Valley field archive. Built with Astro + Tailwind CSS v4.1.</p>
+      <div class="mt-16 pt-8 border-t border-stone-800 text-center">
+        <p class="text-xs text-stone-500">&copy; {new Date().getFullYear()} Bóinne</p>
       </div>
-    </footer>
-  </body>
+    </div>
+  </footer>
+
+  <style>
+    .header--light { background: rgba(250,250,249,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(214,211,209,0.4); }
+    .header--dark { background: rgba(28,25,23,0.6); backdrop-filter: blur(12px); }
+    .header--light .header-brand { color: #1c1917; }
+    .header--light .header-brand:hover { color: #b45309; }
+    .header--dark .header-brand { color: #fafaf9; }
+    .header--dark .header-brand:hover { color: #fbbf24; }
+    .header--light .header-link { color: #78716c; }
+    .header--light .header-link:hover { color: #1c1917; background: #f5f5f4; }
+    .header--dark .header-link { color: rgba(250,250,249,0.7); }
+    .header--dark .header-link:hover { color: #fafaf9; background: rgba(255,255,255,0.1); }
+    .header--light .header-link--active { color: #b45309; background: #fffbeb; }
+    .header--dark .header-link--active { color: #fbbf24; background: rgba(251,191,36,0.15); }
+    .header--light .header-toggle { color: #57534e; }
+    .header--dark .header-toggle { color: #fafaf9; }
+    .header--scrolled.header--dark { background: rgba(28,25,23,0.9); }
+  </style>
+  <script>
+    document.getElementById('menu-toggle')?.addEventListener('click', () => {
+      document.getElementById('mobile-menu')?.classList.toggle('hidden');
+    });
+    const header = document.getElementById('site-header');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 20) header?.classList.add('header--scrolled');
+      else header?.classList.remove('header--scrolled');
+    });
+  </script>
+</body>
 </html>

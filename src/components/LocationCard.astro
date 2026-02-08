@@ -1,6 +1,7 @@
 ---
 import type { CollectionEntry } from "astro:content";
 import EraPill from "./EraPill.astro";
+import { getLocationGradient } from "../lib/images";
 
 interface Props {
   location: CollectionEntry<"locations">;
@@ -12,35 +13,37 @@ const { location, erasById, noteCount = 0 } = Astro.props;
 const locationEras = location.data.eras
   .map((ref) => erasById.get(ref.id))
   .filter((era): era is CollectionEntry<"eras"> => Boolean(era));
+
+const gradient = getLocationGradient(location.slug);
 ---
 
-<article class="glass-card flex h-full flex-col overflow-hidden">
-  <a href={`/locations/${location.slug}/`} class="block landscape-frame m-3 mb-0">
-    <img
-      src={location.data.heroImage}
-      alt={`Landscape view for ${location.data.name}`}
-      class="h-52 w-full object-cover transition duration-500 hover:scale-[1.04]"
-      loading="lazy"
-    />
-  </a>
-  <div class="flex flex-1 flex-col gap-4 p-5">
-    <div class="flex flex-wrap items-start justify-between gap-3">
-      <div>
-        <h3 class="text-3xl text-stone-900">{location.data.name}</h3>
-        <p class="text-sm tracking-wide text-stone-600">{location.data.county}</p>
+<a
+  href={`/locations/${location.slug}/`}
+  class="group block rounded-xl overflow-hidden bg-white border border-stone-200/80 hover:shadow-lg hover:shadow-stone-200/50 hover:-translate-y-0.5 transition-all duration-300"
+>
+  <div
+    class="relative h-48 overflow-hidden placeholder-shimmer"
+    style={`background: ${gradient};`}
+  >
+    <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+    <div class="absolute bottom-4 left-4 right-4 flex flex-wrap gap-1.5">
+      {locationEras.map(era => (
+        <EraPill era={era} linked={false} variant="light" />
+      ))}
+    </div>
+    {noteCount > 0 && (
+      <div class="absolute top-4 right-4">
+        <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-black/30 text-white/80 text-[11px] font-medium">
+          {noteCount} {noteCount === 1 ? 'note' : 'notes'}
+        </span>
       </div>
-      <span class="chip">{noteCount} notes</span>
-    </div>
-    <p class="text-sm text-stone-700">{location.data.teaser}</p>
-    <div class="flex flex-wrap gap-2">
-      {locationEras.map((era) => <EraPill era={era} />)}
-    </div>
-    <a
-      href={`/locations/${location.slug}/`}
-      class="mt-auto inline-flex items-center gap-2 text-sm font-semibold text-river underline decoration-2 underline-offset-4"
-    >
-      Explore site
-      <span aria-hidden="true">→</span>
-    </a>
+    )}
   </div>
-</article>
+  <div class="p-5">
+    <h3 class="text-lg font-bold text-stone-900 group-hover:text-amber-700 transition-colors">
+      {location.data.name}
+    </h3>
+    <p class="text-xs text-stone-400 mt-0.5">{location.data.county}</p>
+    <p class="mt-2 text-sm text-stone-500 leading-relaxed line-clamp-2">{location.data.teaser}</p>
+  </div>
+</a>
