@@ -18,45 +18,44 @@ const locationsSorted = [...locations].sort((a, b) => a.data.name.localeCompare(
 ---
 
 <BaseLayout title="Map | Bóinne" description="Interactive map of every Boyne Valley location.">
-  <section class="px-6 pt-24 pb-8">
-    <div class="max-w-7xl mx-auto">
-      <div class="max-w-2xl mb-10">
-        <p class="text-xs font-semibold uppercase tracking-wider text-amber-700 mb-3">Navigate</p>
-        <h1 class="text-4xl sm:text-5xl font-bold text-stone-900">Discovery Map</h1>
-        <p class="mt-4 text-lg text-stone-500 leading-relaxed">
-          Every site in the Boyne Valley, mapped from coordinates in the content
-          files. Click a marker to explore.
-        </p>
-      </div>
+  <!-- Dark header area -->
+  <section class="bg-dark pt-28 pb-16 px-6">
+    <div class="max-w-3xl mx-auto">
+      <p class="text-[11px] font-semibold uppercase tracking-wider text-gold/50 mb-3">Navigate</p>
+      <h1 class="font-display text-4xl sm:text-5xl font-bold text-white">Discovery Map</h1>
+      <p class="mt-4 text-base text-white/40 leading-relaxed max-w-xl">
+        Every site in the Boyne Valley, mapped from coordinates in the content files.
+        Click a marker to explore.
+      </p>
     </div>
   </section>
 
-  <section class="px-6 pb-20">
-    <div class="max-w-7xl mx-auto">
+  <!-- Map -->
+  <section class="px-6 py-16 bg-dark">
+    <div class="max-w-5xl mx-auto">
       <DiscoveryMap locations={locationsSorted} noteCounts={noteCounts} height="600px" />
     </div>
   </section>
 
-  <!-- Site list -->
-  <section class="px-6 pb-20 bg-stone-50">
-    <div class="max-w-7xl mx-auto pt-16">
-      <h2 class="text-xs font-semibold uppercase tracking-wider text-stone-400 mb-8 pb-4 border-b border-stone-200">All Sites</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {locationsSorted.map((location) => (
-          <a href={`/locations/${location.slug}/`} class="group flex items-center gap-4 p-4 bg-white border border-stone-200 rounded-xl hover:border-amber-300 hover:shadow-sm transition-all">
-            <div class="flex-1 min-w-0">
-              <p class="font-bold text-stone-900 group-hover:text-amber-700 transition-colors">{location.data.name}</p>
-              <p class="text-sm text-stone-500 mt-0.5">{location.data.county}</p>
-            </div>
-            <div class="flex items-center gap-3 text-xs text-stone-400">
-              <span>{noteCounts[location.id] ?? 0} notes</span>
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 text-stone-300 group-hover:text-amber-600 group-hover:translate-x-0.5 transition-all">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-              </svg>
-            </div>
-          </a>
-        ))}
-      </div>
+  <!-- Site register -->
+  <section class="px-6 py-16">
+    <div class="max-w-3xl mx-auto">
+      <p class="text-[11px] font-semibold uppercase tracking-wider text-stone-400 mb-2">Index</p>
+      <h2 class="font-display text-2xl font-bold text-stone-900 mb-8">Site Register</h2>
+      {locationsSorted.map((location) => (
+        <a href={`/locations/${location.slug}/`} class="group flex items-center justify-between py-4 border-b border-stone-200/80 last:border-b-0 hover:bg-stone-50/50 -mx-2 px-2 rounded-lg transition-colors">
+          <div>
+            <p class="font-display font-bold text-stone-900 group-hover:text-gold-dim transition-colors">{location.data.name}</p>
+            <p class="text-xs text-stone-400 mt-0.5">{location.data.county} &middot; {location.data.lat.toFixed(4)}° N, {Math.abs(location.data.lng).toFixed(4)}° W</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="text-xs text-stone-400">{noteCounts[location.id] ?? 0} entries</span>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 text-stone-300 group-hover:text-gold-dim group-hover:translate-x-0.5 transition-all">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+            </svg>
+          </div>
+        </a>
+      ))}
     </div>
   </section>
 </BaseLayout>

@@ -5,14 +5,12 @@ interface Props {
   title?: string;
   description?: string;
   image?: string;
-  darkHeader?: boolean;
 }
 
 const {
   title = "Bóinne | Boyne Valley History",
   description = "Exploring the ancient landscape of the Boyne Valley",
-  image = "/images/hero-boyne.svg",
-  darkHeader = false,
+  image = "/images/og-default.jpg",
 } = Astro.props;
 
 const site = Astro.site ?? new URL(Astro.url.origin);
@@ -44,35 +42,47 @@ const navLinks = [
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Inter:wght@300..700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Inter:wght@300..700&display=swap" rel="stylesheet" />
 </head>
 <body class="min-h-screen flex flex-col">
-  <header
-    id="site-header"
-    class:list={[
-      'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
-      darkHeader ? 'header--dark' : 'header--light',
-    ]}
-  >
-    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-      <a href="/" class="font-display text-2xl font-bold tracking-tight transition-colors header-brand">Bóinne</a>
+
+  <!-- Header — always transparent, solidifies on scroll -->
+  <header id="site-header" class="site-header fixed top-0 left-0 right-0 z-50">
+    <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="/" class="font-display text-xl font-bold tracking-tight text-white/90 hover:text-gold transition-colors">Bóinne</a>
       <nav class="hidden md:flex items-center gap-1">
         {navLinks.map(link => (
-          <a href={link.href} class:list={['px-4 py-2 text-sm font-medium rounded-full transition-all duration-200', currentPath.startsWith(link.href) ? 'header-link--active' : 'header-link']}>
+          <a
+            href={link.href}
+            class:list={[
+              'px-4 py-1.5 text-[13px] font-medium rounded-full transition-all duration-200',
+              currentPath.startsWith(link.href)
+                ? 'text-gold bg-white/10'
+                : 'text-white/60 hover:text-white hover:bg-white/5',
+            ]}
+          >
             {link.label}
           </a>
         ))}
       </nav>
-      <button id="menu-toggle" class="md:hidden p-2 -mr-2 rounded-lg transition-colors header-toggle" aria-label="Menu">
+      <button id="menu-toggle" class="md:hidden p-2 -mr-2 rounded-lg text-white/70 hover:text-white transition-colors" aria-label="Menu">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
           <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5" />
         </svg>
       </button>
     </div>
-    <div id="mobile-menu" class="hidden md:hidden border-t border-stone-200/10">
-      <nav class="max-w-7xl mx-auto px-6 py-4 flex flex-col gap-1">
+    <div id="mobile-menu" class="hidden md:hidden bg-dark/95 backdrop-blur-md border-t border-white/5">
+      <nav class="max-w-6xl mx-auto px-6 py-4 flex flex-col gap-1">
         {navLinks.map(link => (
-          <a href={link.href} class:list={['px-4 py-3 text-sm font-medium rounded-lg transition-colors', currentPath.startsWith(link.href) ? 'text-amber-600 bg-amber-50' : 'text-stone-600 hover:bg-stone-100']}>
+          <a
+            href={link.href}
+            class:list={[
+              'px-4 py-3 text-sm font-medium rounded-lg transition-colors',
+              currentPath.startsWith(link.href)
+                ? 'text-gold bg-white/10'
+                : 'text-white/60 hover:text-white hover:bg-white/5',
+            ]}
+          >
             {link.label}
           </a>
         ))}
@@ -82,64 +92,87 @@ const navLinks = [
 
   <main class="flex-1"><slot /></main>
 
-  <footer class="bg-stone-900 text-stone-400 mt-auto">
-    <div class="max-w-7xl mx-auto px-6 py-20">
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
-        <div class="md:col-span-2">
-          <a href="/" class="font-display text-3xl font-bold text-white hover:text-amber-400 transition-colors">Bóinne</a>
-          <p class="mt-4 text-sm leading-relaxed max-w-md">A personal exploration of the history, monuments, and stories of the Boyne Valley in County Meath, Ireland.</p>
+  <!-- Footer — dark, reverent -->
+  <footer class="bg-dark text-stone-500 mt-auto">
+    <div class="max-w-6xl mx-auto px-6 py-20">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-12">
+        <div class="md:col-span-5">
+          <a href="/" class="font-display text-2xl font-bold text-white/90 hover:text-gold transition-colors">Bóinne</a>
+          <p class="mt-4 text-sm leading-relaxed max-w-sm text-stone-400">
+            Five thousand years of history carved into the landscape of County Meath.
+            A personal exploration of Ireland's most ancient valley.
+          </p>
         </div>
-        <div>
-          <h3 class="text-xs font-semibold uppercase tracking-wider text-stone-500 mb-4">Explore</h3>
+        <div class="md:col-span-3 md:col-start-7">
+          <h3 class="text-[11px] font-semibold uppercase tracking-wider text-stone-600 mb-4">Explore</h3>
           <nav class="flex flex-col gap-2.5">
-            <a href="/locations/" class="text-sm hover:text-white transition-colors">Locations</a>
-            <a href="/eras/" class="text-sm hover:text-white transition-colors">Eras</a>
-            <a href="/notes/" class="text-sm hover:text-white transition-colors">Journal</a>
-            <a href="/map/" class="text-sm hover:text-white transition-colors">Map</a>
+            <a href="/locations/" class="text-sm text-stone-400 hover:text-white transition-colors">Locations</a>
+            <a href="/eras/" class="text-sm text-stone-400 hover:text-white transition-colors">Eras</a>
+            <a href="/notes/" class="text-sm text-stone-400 hover:text-white transition-colors">Journal</a>
+            <a href="/map/" class="text-sm text-stone-400 hover:text-white transition-colors">Map</a>
           </nav>
         </div>
-        <div>
-          <h3 class="text-xs font-semibold uppercase tracking-wider text-stone-500 mb-4">Key Sites</h3>
+        <div class="md:col-span-3">
+          <h3 class="text-[11px] font-semibold uppercase tracking-wider text-stone-600 mb-4">Key Sites</h3>
           <nav class="flex flex-col gap-2.5">
-            <a href="/locations/newgrange/" class="text-sm hover:text-white transition-colors">Newgrange</a>
-            <a href="/locations/knowth/" class="text-sm hover:text-white transition-colors">Knowth</a>
-            <a href="/locations/dowth/" class="text-sm hover:text-white transition-colors">Dowth</a>
-            <a href="/locations/slane-castle/" class="text-sm hover:text-white transition-colors">Slane Castle</a>
+            <a href="/locations/newgrange/" class="text-sm text-stone-400 hover:text-white transition-colors">Newgrange</a>
+            <a href="/locations/knowth/" class="text-sm text-stone-400 hover:text-white transition-colors">Knowth</a>
+            <a href="/locations/dowth/" class="text-sm text-stone-400 hover:text-white transition-colors">Dowth</a>
+            <a href="/locations/slane-castle/" class="text-sm text-stone-400 hover:text-white transition-colors">Slane Castle</a>
           </nav>
         </div>
       </div>
-      <div class="mt-16 pt-8 border-t border-stone-800 text-center">
-        <p class="text-xs text-stone-500">&copy; {new Date().getFullYear()} Bóinne</p>
+      <div class="mt-16 pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <p class="text-xs text-stone-600">&copy; {new Date().getFullYear()} Bóinne. All rights reserved.</p>
+        <p class="text-xs text-stone-600 italic">Made with quiet reverence for ancient places.</p>
       </div>
     </div>
   </footer>
 
-  <style>
-    .header--light { background: rgba(250,250,249,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(214,211,209,0.4); }
-    .header--dark { background: rgba(28,25,23,0.6); backdrop-filter: blur(12px); }
-    .header--light .header-brand { color: #1c1917; }
-    .header--light .header-brand:hover { color: #b45309; }
-    .header--dark .header-brand { color: #fafaf9; }
-    .header--dark .header-brand:hover { color: #fbbf24; }
-    .header--light .header-link { color: #78716c; }
-    .header--light .header-link:hover { color: #1c1917; background: #f5f5f4; }
-    .header--dark .header-link { color: rgba(250,250,249,0.7); }
-    .header--dark .header-link:hover { color: #fafaf9; background: rgba(255,255,255,0.1); }
-    .header--light .header-link--active { color: #b45309; background: #fffbeb; }
-    .header--dark .header-link--active { color: #fbbf24; background: rgba(251,191,36,0.15); }
-    .header--light .header-toggle { color: #57534e; }
-    .header--dark .header-toggle { color: #fafaf9; }
-    .header--scrolled.header--dark { background: rgba(28,25,23,0.9); }
-  </style>
+  <!-- Back to top -->
+  <button id="back-to-top" class="fixed bottom-6 right-6 z-40 w-10 h-10 rounded-full bg-dark-soft/80 backdrop-blur border border-white/10 text-white/50 hover:text-gold hover:border-gold/30 transition-all opacity-0 pointer-events-none" aria-label="Back to top">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mx-auto"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" /></svg>
+  </button>
+
   <script>
+    // Mobile menu
     document.getElementById('menu-toggle')?.addEventListener('click', () => {
       document.getElementById('mobile-menu')?.classList.toggle('hidden');
     });
+
+    // Header scroll effect
     const header = document.getElementById('site-header');
     window.addEventListener('scroll', () => {
-      if (window.scrollY > 20) header?.classList.add('header--scrolled');
-      else header?.classList.remove('header--scrolled');
-    });
+      if (window.scrollY > 50) header?.classList.add('scrolled');
+      else header?.classList.remove('scrolled');
+    }, { passive: true });
+
+    // Scroll-reveal
+    const reveals = document.querySelectorAll('.reveal');
+    if (reveals.length) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1 });
+      reveals.forEach(el => observer.observe(el));
+    }
+
+    // Back to top
+    const btt = document.getElementById('back-to-top');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 500) {
+        btt?.classList.remove('opacity-0', 'pointer-events-none');
+        btt?.classList.add('opacity-100');
+      } else {
+        btt?.classList.add('opacity-0', 'pointer-events-none');
+        btt?.classList.remove('opacity-100');
+      }
+    }, { passive: true });
+    btt?.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
   </script>
 </body>
 </html>

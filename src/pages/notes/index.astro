@@ -15,21 +15,23 @@ const erasById = new Map(eras.map((e) => [e.id, e]));
 ---
 
 <BaseLayout title="Journal | Bóinne" description="Writings and explorations across the Boyne Valley">
-  <section class="px-6 pt-24 pb-20">
-    <div class="max-w-7xl mx-auto">
-      <div class="max-w-2xl mb-14">
-        <p class="text-xs font-semibold uppercase tracking-wider text-amber-700 mb-3">Read</p>
-        <h1 class="text-4xl sm:text-5xl font-bold text-stone-900">Journal</h1>
-        <p class="mt-4 text-lg text-stone-500 leading-relaxed">
-          Explorations, histories, and reflections from across the Boyne Valley.
-          Each entry is a window into a different time and place.
-        </p>
-      </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {notesSorted.map(note => (
-          <NoteCard note={note} locationById={locationById} erasById={erasById} />
-        ))}
-      </div>
+  <!-- Dark header area -->
+  <section class="bg-dark pt-28 pb-16 px-6">
+    <div class="max-w-3xl mx-auto">
+      <p class="text-[11px] font-semibold uppercase tracking-wider text-gold/50 mb-3">Field Notes</p>
+      <h1 class="font-display text-4xl sm:text-5xl font-bold text-white">Journal</h1>
+      <p class="mt-4 text-base text-white/40 leading-relaxed max-w-xl">
+        Explorations, histories, and reflections from across the Boyne Valley.
+        Each entry is a window into a different time and place.
+      </p>
+    </div>
+  </section>
+
+  <section class="px-6 py-16">
+    <div class="max-w-3xl mx-auto">
+      {notesSorted.map(note => (
+        <NoteCard note={note} locationById={locationById} erasById={erasById} />
+      ))}
     </div>
   </section>
 </BaseLayout>

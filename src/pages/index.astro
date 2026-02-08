@@ -25,48 +25,128 @@ const noteCounts = notes.reduce<Record<string, number>>((acc, note) => {
 }, {});
 ---
 
-<BaseLayout title="Bóinne | Boyne Valley History" darkHeader={true}>
+<BaseLayout title="Bóinne | Boyne Valley History">
   <!-- Hero -->
-  <section class="relative min-h-[90vh] flex items-center justify-center overflow-hidden"
+  <section class="relative min-h-screen flex items-center justify-center overflow-hidden vignette"
     style="background: linear-gradient(145deg, #0f0f1a 0%, #1a1a2e 25%, #16213e 50%, #0f3460 75%, #1a1a2e 100%);"
   >
-    <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(circle at 20% 50%, rgba(180,83,9,0.3), transparent 50%), radial-gradient(circle at 80% 30%, rgba(59,130,246,0.15), transparent 50%);"></div>
-    <div class="relative z-10 text-center px-6 max-w-4xl mx-auto">
-      <p class="text-amber-400/80 text-sm font-semibold uppercase tracking-[0.25em] mb-6">The Boyne Valley</p>
-      <h1 class="font-display text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black text-white leading-[0.85] tracking-tight">
+    <div class="absolute inset-0 opacity-15" style="background-image: radial-gradient(circle at 25% 50%, rgba(255,213,79,0.15), transparent 50%), radial-gradient(circle at 75% 40%, rgba(59,130,246,0.08), transparent 50%);"></div>
+    <div class="relative z-10 text-center px-6 max-w-3xl mx-auto">
+      <p class="text-gold/60 text-xs font-semibold uppercase tracking-[0.3em] mb-8">Brú na Bóinne, Ireland</p>
+      <h1 class="font-display text-7xl sm:text-8xl md:text-9xl font-black text-white leading-[0.85] tracking-tight">
         Bóinne
       </h1>
-      <p class="mt-8 text-lg sm:text-xl text-stone-300 max-w-2xl mx-auto leading-relaxed">
+      <p class="mt-8 text-base sm:text-lg text-white/50 max-w-xl mx-auto leading-relaxed font-light">
         Five thousand years of history carved into the landscape of County Meath.
         A personal exploration of Ireland's most ancient valley.
       </p>
-      <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-        <a href="/locations/" class="inline-flex items-center gap-2 px-7 py-3.5 bg-amber-600 hover:bg-amber-500 text-white font-semibold rounded-full transition-colors">
-          Explore Locations
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
+      <div class="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a href="#introduction" class="inline-flex items-center gap-2 px-6 py-3 bg-gold/90 hover:bg-gold text-dark font-semibold text-sm rounded-full transition-colors">
+          Explore the Story
         </a>
-        <a href="/map/" class="inline-flex items-center gap-2 px-7 py-3.5 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-full border border-white/20 transition-colors">
+        <a href="/map/" class="inline-flex items-center gap-2 px-6 py-3 bg-white/5 hover:bg-white/10 text-white/70 hover:text-white font-medium text-sm rounded-full border border-white/10 hover:border-white/20 transition-all">
           View Map
         </a>
       </div>
     </div>
-    <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-surface to-transparent"></div>
+    <!-- Scroll indicator -->
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/20">
+      <span class="text-[10px] uppercase tracking-widest">Scroll</span>
+      <div class="w-px h-8 bg-gradient-to-b from-white/20 to-transparent"></div>
+    </div>
   </section>
 
-  <!-- Locations -->
-  <section class="px-6 py-20">
-    <div class="max-w-7xl mx-auto">
-      <div class="flex items-end justify-between mb-10">
-        <div>
-          <p class="text-xs font-semibold uppercase tracking-wider text-amber-700 mb-2">Discover</p>
-          <h2 class="text-3xl sm:text-4xl font-bold text-stone-900">Ancient Sites</h2>
+  <!-- Introduction -->
+  <section id="introduction" class="px-6 py-24">
+    <div class="max-w-3xl mx-auto reveal">
+      <p class="text-lg sm:text-xl text-stone-600 leading-relaxed font-light">
+        Nestled in the bend of the River Boyne, the <strong class="font-semibold text-stone-800">Brú na Bóinne</strong> complex
+        stands as one of the most important archaeological landscapes in the world.
+        Older than the Egyptian pyramids, these monuments — Newgrange, Knowth, and Dowth —
+        represent the pinnacle of Neolithic achievement in Ireland. Together with later
+        medieval and early modern sites, the valley tells a continuous story across five millennia.
+      </p>
+    </div>
+  </section>
+
+  <!-- Key Facts -->
+  <section class="px-6 pb-20">
+    <div class="max-w-4xl mx-auto reveal">
+      <div class="facts-grid">
+        <div class="fact">
+          <p class="fact-label">Age</p>
+          <p class="fact-value">5,000+ Years</p>
+          <p class="fact-detail">Built before the Egyptian pyramids</p>
         </div>
-        <a href="/locations/" class="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-amber-700 hover:text-amber-800 transition-colors">
-          All locations
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
+        <div class="fact">
+          <p class="fact-label">Sites Documented</p>
+          <p class="fact-value">{locations.length}</p>
+          <p class="fact-detail">Passage tombs, castles, and sacred sites</p>
+        </div>
+        <div class="fact">
+          <p class="fact-label">UNESCO Status</p>
+          <p class="fact-value">World Heritage</p>
+          <p class="fact-detail">Part of Brú na Bóinne since 1993</p>
+        </div>
+        <div class="fact">
+          <p class="fact-label">Historical Eras</p>
+          <p class="fact-value">{eras.length} Periods</p>
+          <p class="fact-detail">From Neolithic to Early Modern</p>
+        </div>
+        <div class="fact">
+          <p class="fact-label">Location</p>
+          <p class="fact-value">Co. Meath</p>
+          <p class="fact-detail">In the bend of the River Boyne</p>
+        </div>
+        <div class="fact">
+          <p class="fact-label">Journal Entries</p>
+          <p class="fact-value">{notes.length}</p>
+          <p class="fact-detail">Field notes and explorations</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Timeline -->
+  <section class="px-6 py-20 bg-surface-warm">
+    <div class="max-w-3xl mx-auto">
+      <div class="reveal">
+        <p class="text-[11px] font-semibold uppercase tracking-wider text-stone-400 mb-2">Timeline</p>
+        <h2 class="font-display text-3xl font-bold text-stone-900 mb-10">Through the Ages</h2>
+      </div>
+      <div class="timeline reveal">
+        {erasSorted.map(era => (
+          <div class="timeline-entry">
+            <p class="text-[11px] font-semibold uppercase tracking-wider text-stone-400 mb-1">{era.data.span}</p>
+            <h3 class="font-display text-xl font-bold text-stone-900">
+              <a href={`/eras/${era.slug}/`} class="hover:text-gold-dim transition-colors">{era.data.name}</a>
+            </h3>
+            <p class="mt-1.5 text-sm text-stone-500 leading-relaxed max-w-xl">{era.data.summary}</p>
+          </div>
+        ))}
+      </div>
+      <div class="mt-10 reveal">
+        <a href="/eras/" class="inline-flex items-center gap-2 text-sm font-medium text-stone-500 hover:text-stone-800 transition-colors">
+          View full timeline
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
         </a>
       </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    </div>
+  </section>
+
+  <!-- Sites -->
+  <section class="px-6 py-20">
+    <div class="max-w-3xl mx-auto">
+      <div class="flex items-end justify-between mb-6 reveal">
+        <div>
+          <p class="text-[11px] font-semibold uppercase tracking-wider text-stone-400 mb-2">Discover</p>
+          <h2 class="font-display text-3xl font-bold text-stone-900">Ancient Sites</h2>
+        </div>
+        <a href="/locations/" class="hidden sm:inline-flex items-center gap-1.5 text-sm text-stone-400 hover:text-stone-700 transition-colors">
+          All locations &rarr;
+        </a>
+      </div>
+      <div class="reveal">
         {locationsSorted.map(loc => (
           <LocationCard location={loc} erasById={erasById} noteCount={noteCounts[loc.id] ?? 0} />
         ))}
@@ -75,58 +155,58 @@ const noteCounts = notes.reduce<Record<string, number>>((acc, note) => {
   </section>
 
   <!-- Map -->
-  <section class="px-6 py-20 bg-stone-50">
-    <div class="max-w-7xl mx-auto">
-      <div class="flex items-end justify-between mb-10">
+  <section class="px-6 py-20 bg-dark">
+    <div class="max-w-5xl mx-auto">
+      <div class="flex items-end justify-between mb-8 reveal">
         <div>
-          <p class="text-xs font-semibold uppercase tracking-wider text-amber-700 mb-2">Navigate</p>
-          <h2 class="text-3xl sm:text-4xl font-bold text-stone-900">The Valley</h2>
+          <p class="text-[11px] font-semibold uppercase tracking-wider text-gold/50 mb-2">Navigate</p>
+          <h2 class="font-display text-3xl font-bold text-white">The Valley</h2>
         </div>
-        <a href="/map/" class="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-amber-700 hover:text-amber-800 transition-colors">
-          Full map
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
+        <a href="/map/" class="hidden sm:inline-flex items-center gap-1.5 text-sm text-white/40 hover:text-gold transition-colors">
+          Full map &rarr;
         </a>
       </div>
-      <DiscoveryMap locations={locationsSorted} noteCounts={noteCounts} height="520px" />
+      <div class="reveal">
+        <DiscoveryMap locations={locationsSorted} noteCounts={noteCounts} height="480px" />
+      </div>
     </div>
   </section>
 
   <!-- Journal -->
   <section class="px-6 py-20">
-    <div class="max-w-7xl mx-auto">
-      <div class="flex items-end justify-between mb-10">
+    <div class="max-w-3xl mx-auto">
+      <div class="flex items-end justify-between mb-6 reveal">
         <div>
-          <p class="text-xs font-semibold uppercase tracking-wider text-amber-700 mb-2">Read</p>
-          <h2 class="text-3xl sm:text-4xl font-bold text-stone-900">Latest Writings</h2>
+          <p class="text-[11px] font-semibold uppercase tracking-wider text-stone-400 mb-2">Read</p>
+          <h2 class="font-display text-3xl font-bold text-stone-900">Latest Writings</h2>
         </div>
-        <a href="/notes/" class="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-amber-700 hover:text-amber-800 transition-colors">
-          All entries
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
+        <a href="/notes/" class="hidden sm:inline-flex items-center gap-1.5 text-sm text-stone-400 hover:text-stone-700 transition-colors">
+          All entries &rarr;
         </a>
       </div>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {notesSorted.slice(0, 3).map(note => (
+      <div class="reveal">
+        {notesSorted.slice(0, 4).map(note => (
           <NoteCard note={note} locationById={locationById} erasById={erasById} />
         ))}
       </div>
     </div>
   </section>
 
-  <!-- Eras -->
-  <section class="px-6 py-20 bg-stone-900">
-    <div class="max-w-7xl mx-auto">
-      <div class="mb-12">
-        <p class="text-xs font-semibold uppercase tracking-wider text-amber-400 mb-2">Timeline</p>
-        <h2 class="text-3xl sm:text-4xl font-bold text-white">Through the Ages</h2>
-        <p class="mt-3 text-stone-400 max-w-xl">The Boyne Valley spans every major era of Irish history.</p>
-      </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {erasSorted.map(era => (
-          <a href={`/eras/${era.slug}/`} class="group relative block p-6 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-amber-500/30 transition-all duration-300">
-            <p class="text-[11px] font-semibold uppercase tracking-wider text-amber-400 mb-2">{era.data.span}</p>
-            <h3 class="text-xl font-bold text-white group-hover:text-amber-400 transition-colors">{era.data.name}</h3>
-          </a>
-        ))}
+  <!-- CTA -->
+  <section class="px-6 py-24 bg-dark">
+    <div class="max-w-2xl mx-auto text-center reveal">
+      <h2 class="font-display text-3xl sm:text-4xl font-bold text-white">Explore the Full Story</h2>
+      <p class="mt-4 text-white/40 leading-relaxed">
+        Browse every location, trace the timeline from the Neolithic to the present,
+        or read field notes from across the valley.
+      </p>
+      <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a href="/locations/" class="px-6 py-3 bg-gold/90 hover:bg-gold text-dark font-semibold text-sm rounded-full transition-colors">
+          Browse Locations
+        </a>
+        <a href="/notes/" class="px-6 py-3 bg-white/5 hover:bg-white/10 text-white/60 hover:text-white text-sm font-medium rounded-full border border-white/10 hover:border-white/20 transition-all">
+          Read the Journal
+        </a>
       </div>
     </div>
   </section>
