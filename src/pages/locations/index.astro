@@ -1,0 +1,42 @@
+---
+import { getCollection } from "astro:content";
+import LocationCard from "../../components/LocationCard.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+const [locations, notes, eras] = await Promise.all([
+  getCollection("locations"),
+  getCollection("posts"),
+  getCollection("eras"),
+]);
+
+const erasById = new Map(eras.map((era) => [era.id, era]));
+const noteCounts = notes.reduce<Record<string, number>>((acc, note) => {
+  const key = note.data.location.id;
+  acc[key] = (acc[key] ?? 0) + 1;
+  return acc;
+}, {});
+
+const sortedLocations = [...locations].sort((a, b) => a.data.name.localeCompare(b.data.name));
+---
+
+<BaseLayout
+  title="Locations | Bóinne"
+  description="All mapped and documented Boyne Valley locations in your Bóinne archive."
+>
+  <section class="section-shell mt-10 space-y-5 sm:mt-12">
+    <p class="chip">Locations</p>
+    <h1 class="text-5xl text-stone-900 sm:text-6xl">Site Index</h1>
+    <p class="max-w-3xl text-sm text-stone-700 sm:text-base">
+      Each location can hold multiple eras and many linked notes. This is your central register for monuments, ruins,
+      and landscape points.
+    </p>
+  </section>
+
+  <section class="section-shell mt-8 pb-4">
+    <div class="grid gap-6 md:grid-cols-2">
+      {sortedLocations.map((location) => (
+        <LocationCard location={location} erasById={erasById} noteCount={noteCounts[location.id] ?? 0} />
+      ))}
+    </div>
+  </section>
+</BaseLayout>

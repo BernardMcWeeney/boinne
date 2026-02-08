@@ -1,0 +1,94 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { getCollection, getEntries, getEntry, render } from "astro:content";
+import EraPill from "../../components/EraPill.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+export async function getStaticPaths() {
+  const notes = await getCollection("posts");
+
+  return notes.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props as { post: CollectionEntry<"posts"> };
+const { Content } = await render(post);
+
+const [location, allEras] = await Promise.all([
+  getEntry(post.data.location),
+  getCollection("eras"),
+]);
+
+const erasById = new Map(allEras.map((era) => [era.id, era]));
+const linkedEras = post.data.eras
+  .map((ref) => erasById.get(ref.id))
+  .filter((era): era is CollectionEntry<"eras"> => Boolean(era));
+
+const relatedNotes = post.data.related.length ? await getEntries(post.data.related) : [];
+
+if (!location) {
+  throw new Error(`Location not found for post ${post.slug}`);
+}
+---
+
+<BaseLayout title={`${post.data.title} | Bóinne`} description={post.data.excerpt} image={post.data.heroImage}>
+  <section class="section-shell mt-8 space-y-6 sm:mt-12">
+    <div class="landscape-frame relative min-h-[20rem] overflow-hidden">
+      <img src={post.data.heroImage} alt={post.data.title} class="absolute inset-0 h-full w-full object-cover" />
+      <div class="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent"></div>
+      <div class="relative z-10 flex h-full flex-col justify-end gap-3 p-6 text-white sm:p-9 lg:max-w-3xl">
+        <p class="chip border-white/35 bg-white/15 text-white">{location.data.name}</p>
+        <h1 class="text-4xl sm:text-5xl">{post.data.title}</h1>
+        <p class="max-w-2xl text-sm text-white/90 sm:text-base">{post.data.excerpt}</p>
+      </div>
+    </div>
+
+    <div class="grid gap-6 lg:grid-cols-[2fr_1fr]">
+      <article class="glass-card p-6 sm:p-8">
+        <div class="flex flex-wrap items-center gap-3 text-xs font-semibold uppercase tracking-[0.08em] text-stone-600">
+          <span>{post.data.publishedAt.toLocaleDateString("en-IE", { dateStyle: "long" })}</span>
+          <span>•</span>
+          <span>{post.data.discoveryType.replace("-", " ")}</span>
+        </div>
+        <div class="mt-4 space-y-4 text-sm text-stone-700 sm:text-base">
+          <Content />
+        </div>
+      </article>
+
+      <aside class="space-y-4">
+        <section class="glass-card p-5">
+          <h2 class="text-3xl text-stone-900">Linked Location</h2>
+          <a href={`/locations/${location.slug}/`} class="mt-2 block text-sm font-semibold text-river underline decoration-2 underline-offset-4">
+            {location.data.name} →
+          </a>
+        </section>
+
+        <section class="glass-card p-5">
+          <h2 class="text-3xl text-stone-900">Eras</h2>
+          <div class="mt-3 flex flex-wrap gap-2">
+            {linkedEras.map((era) => <EraPill era={era} />)}
+          </div>
+        </section>
+      </aside>
+    </div>
+  </section>
+
+  {
+    relatedNotes.length > 0 && (
+      <section class="section-shell mt-14 pb-4">
+        <h2 class="text-4xl text-stone-900">Related Notes</h2>
+        <div class="mt-4 grid gap-4 md:grid-cols-2">
+          {relatedNotes.map((related) => (
+            <a href={`/notes/${related.slug}/`} class="glass-card block p-5 transition hover:-translate-y-0.5">
+              <p class="text-xs font-semibold uppercase tracking-[0.08em] text-stone-500">Field note</p>
+              <h3 class="mt-1 text-3xl text-stone-900">{related.data.title}</h3>
+              <p class="mt-2 text-sm text-stone-700">{related.data.excerpt}</p>
+            </a>
+          ))}
+        </div>
+      </section>
+    )
+  }
+</BaseLayout>

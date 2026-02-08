@@ -1,0 +1,85 @@
+---
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  locations: CollectionEntry<"locations">[];
+  noteCounts: Record<string, number>;
+}
+
+const { locations, noteCounts } = Astro.props;
+
+const lats = locations.map((location) => location.data.lat);
+const lngs = locations.map((location) => location.data.lng);
+
+const minLat = Math.min(...lats);
+const maxLat = Math.max(...lats);
+const minLng = Math.min(...lngs);
+const maxLng = Math.max(...lngs);
+
+const latSpan = maxLat - minLat || 1;
+const lngSpan = maxLng - minLng || 1;
+
+const points = locations.map((location) => {
+  const x = 110 + ((location.data.lng - minLng) / lngSpan) * 780;
+  const y = 520 - ((location.data.lat - minLat) / latSpan) * 390;
+  return {
+    location,
+    x,
+    y,
+    notes: noteCounts[location.id] ?? 0,
+  };
+});
+---
+
+<div class="landscape-frame border border-white/50 bg-gradient-to-b from-[#edf5f3] via-[#e8e7de] to-[#e7dcc8]">
+  <svg viewBox="0 0 1000 620" class="h-auto w-full">
+    <defs>
+      <linearGradient id="river" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#7fa8b2" />
+        <stop offset="100%" stop-color="#4d7a89" />
+      </linearGradient>
+      <radialGradient id="glow" cx="50%" cy="45%" r="58%">
+        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9" />
+        <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+      </radialGradient>
+    </defs>
+
+    <rect x="0" y="0" width="1000" height="620" fill="url(#glow)" />
+
+    <path
+      d="M 40 470 C 160 510, 240 380, 340 420 C 450 470, 550 380, 640 420 C 760 470, 860 380, 980 430"
+      fill="none"
+      stroke="url(#river)"
+      stroke-width="24"
+      stroke-linecap="round"
+      opacity="0.55"
+    />
+
+    {points.map((point) => (
+      <a href={`/locations/${point.location.slug}/`}>
+        <circle cx={point.x} cy={point.y} r="16" fill="#173142" opacity="0.15" />
+        <circle cx={point.x} cy={point.y} r="10" fill="#173142" />
+        <circle cx={point.x} cy={point.y} r="4" fill="#ffffff" />
+        <text
+          x={point.x + 15}
+          y={point.y - 12}
+          fill="#1d1d1b"
+          font-size="14"
+          font-family="Manrope, sans-serif"
+          font-weight="600"
+        >
+          {point.location.data.name}
+        </text>
+        <text
+          x={point.x + 15}
+          y={point.y + 10}
+          fill="#4b5563"
+          font-size="12"
+          font-family="Manrope, sans-serif"
+        >
+          {point.notes} notes logged
+        </text>
+      </a>
+    ))}
+  </svg>
+</div>

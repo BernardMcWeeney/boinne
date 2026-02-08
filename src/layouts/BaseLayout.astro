@@ -1,0 +1,63 @@
+---
+import "../styles/global.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+}
+
+const {
+  title = "Bóinne | Boyne Valley Field Archive",
+  description = "A personal, interconnected history atlas for the Boyne Valley.",
+  image = "/images/hero-boyne.svg",
+} = Astro.props;
+
+const site = Astro.site ?? new URL(Astro.url.origin);
+const canonical = new URL(Astro.url.pathname, site);
+const ogImage = new URL(image, site);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="theme-color" content="#e7dfcf" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="text-stone-900 antialiased">
+    <header class="sticky top-0 z-40 border-b border-white/40 bg-parchment/70 backdrop-blur-lg">
+      <div class="section-shell flex items-center justify-between gap-4 py-3">
+        <a href="/" class="text-3xl font-semibold tracking-wide text-stone-900">Bóinne</a>
+        <nav class="flex flex-wrap items-center gap-1">
+          <a class="nav-link" href="/locations/">Locations</a>
+          <a class="nav-link" href="/eras/">Eras</a>
+          <a class="nav-link" href="/notes/">Field Notes</a>
+          <a class="nav-link" href="/map/">Map</a>
+        </nav>
+      </div>
+    </header>
+    <main><slot /></main>
+    <footer class="mt-24 border-t border-stone-900/10 bg-white/55 py-10">
+      <div class="section-shell flex flex-col gap-3 text-sm text-stone-700 sm:flex-row sm:items-center sm:justify-between">
+        <p class="text-xl font-semibold text-stone-900">Bóinne</p>
+        <p>Boyne Valley field archive. Built with Astro + Tailwind CSS v4.1.</p>
+      </div>
+    </footer>
+  </body>
+</html>

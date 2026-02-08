@@ -1,0 +1,38 @@
+---
+import { getCollection } from "astro:content";
+import NoteCard from "../../components/NoteCard.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+const [notes, locations, eras] = await Promise.all([
+  getCollection("posts"),
+  getCollection("locations"),
+  getCollection("eras"),
+]);
+
+const notesSorted = [...notes].sort(
+  (a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime(),
+);
+const locationById = new Map(locations.map((location) => [location.id, location]));
+const erasById = new Map(eras.map((era) => [era.id, era]));
+---
+
+<BaseLayout
+  title="Field Notes | Bóinne"
+  description="All linked field notes for discoveries across the Boyne Valley."
+>
+  <section class="section-shell mt-10 space-y-5 sm:mt-12">
+    <p class="chip">Field Notes</p>
+    <h1 class="text-5xl text-stone-900 sm:text-6xl">Research Journal</h1>
+    <p class="max-w-3xl text-sm text-stone-700 sm:text-base">
+      Every note links to a location and one or more eras, so this index is both a journal and a relational graph.
+    </p>
+  </section>
+
+  <section class="section-shell mt-8 pb-4">
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {notesSorted.map((note) => (
+        <NoteCard note={note} locationById={locationById} erasById={erasById} />
+      ))}
+    </div>
+  </section>
+</BaseLayout>

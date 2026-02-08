@@ -1,0 +1,116 @@
+---
+import { getCollection } from "astro:content";
+import DiscoveryMap from "../components/DiscoveryMap.astro";
+import EraPill from "../components/EraPill.astro";
+import LocationCard from "../components/LocationCard.astro";
+import NoteCard from "../components/NoteCard.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const [locations, notes, eras] = await Promise.all([
+  getCollection("locations"),
+  getCollection("posts"),
+  getCollection("eras"),
+]);
+
+const locationsSorted = [...locations].sort((a, b) => a.data.name.localeCompare(b.data.name));
+const notesSorted = [...notes].sort(
+  (a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime(),
+);
+const erasSorted = [...eras].sort((a, b) => a.data.order - b.data.order);
+
+const locationById = new Map(locations.map((location) => [location.id, location]));
+const erasById = new Map(eras.map((era) => [era.id, era]));
+
+const noteCounts = notes.reduce<Record<string, number>>((acc, note) => {
+  const key = note.data.location.id;
+  acc[key] = (acc[key] ?? 0) + 1;
+  return acc;
+}, {});
+---
+
+<BaseLayout
+  title="Bóinne | Boyne Valley History Atlas"
+  description="A personal history wiki for recording discoveries across the Boyne Valley."
+  image="/images/hero-boyne.svg"
+>
+  <section class="section-shell mt-8 space-y-6 sm:mt-12">
+    <div class="landscape-frame relative min-h-[28rem] overflow-hidden">
+      <img src="/images/hero-boyne.svg" alt="Boyne Valley landscape" class="absolute inset-0 h-full w-full object-cover" />
+      <div class="absolute inset-0 bg-gradient-to-r from-black/55 via-black/20 to-transparent"></div>
+      <div class="relative z-10 flex h-full flex-col justify-end gap-6 p-6 text-white sm:p-10 lg:max-w-3xl">
+        <p class="chip border-white/30 bg-white/15 text-white">Boyne Valley Archive</p>
+        <h1 class="text-5xl sm:text-6xl lg:text-7xl">Bóinne</h1>
+        <p class="max-w-2xl text-base text-white/90 sm:text-lg">
+          A living field atlas for monuments, ruins, and stories across the valley. Log discoveries, connect places,
+          and map every note across eras.
+        </p>
+        <div class="flex flex-wrap gap-3">
+          <a href="/locations/" class="rounded-full bg-white px-5 py-2 text-sm font-semibold text-stone-900 transition hover:bg-white/90">Browse locations</a>
+          <a href="/map/" class="rounded-full border border-white/50 bg-white/10 px-5 py-2 text-sm font-semibold text-white transition hover:bg-white/20">Open discovery map</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-shell mt-16 space-y-6">
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <p class="chip">Landscape Atlas</p>
+        <h2 class="mt-3 text-4xl text-stone-900 sm:text-5xl">Plot Every Site</h2>
+      </div>
+      <a href="/map/" class="text-sm font-semibold uppercase tracking-[0.08em] text-river">See full map →</a>
+    </div>
+    <DiscoveryMap locations={locationsSorted} noteCounts={noteCounts} />
+  </section>
+
+  <section class="section-shell mt-16 space-y-6">
+    <div>
+      <p class="chip">Core Places</p>
+      <h2 class="mt-3 text-4xl text-stone-900 sm:text-5xl">Starter Locations</h2>
+    </div>
+    <div class="grid gap-6 md:grid-cols-2">
+      {locationsSorted.map((location) => (
+        <LocationCard location={location} erasById={erasById} noteCount={noteCounts[location.id] ?? 0} />
+      ))}
+    </div>
+  </section>
+
+  <section class="section-shell mt-16 space-y-6">
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <p class="chip">Chronology</p>
+        <h2 class="mt-3 text-4xl text-stone-900 sm:text-5xl">Eras in Play</h2>
+      </div>
+      <a href="/eras/" class="text-sm font-semibold uppercase tracking-[0.08em] text-river">Open era index →</a>
+    </div>
+    <div class="glass-card p-6 sm:p-8">
+      <div class="flex flex-wrap gap-3">
+        {erasSorted.map((era) => <EraPill era={era} />)}
+      </div>
+      <div class="mt-6 grid gap-5 md:grid-cols-2">
+        {erasSorted.slice(0, 4).map((era) => (
+          <article class="rounded-xl border border-stone-900/10 bg-white/65 p-4">
+            <h3 class="text-3xl text-stone-900">{era.data.name}</h3>
+            <p class="text-xs font-semibold uppercase tracking-[0.08em] text-stone-600">{era.data.span}</p>
+            <p class="mt-2 text-sm text-stone-700">{era.data.summary}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section-shell mt-16 space-y-6 pb-4">
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <p class="chip">Recent Writing</p>
+        <h2 class="mt-3 text-4xl text-stone-900 sm:text-5xl">Field Notes</h2>
+      </div>
+      <a href="/notes/" class="text-sm font-semibold uppercase tracking-[0.08em] text-river">All notes →</a>
+    </div>
+    <div class="grid gap-6 md:grid-cols-3">
+      {notesSorted.slice(0, 3).map((note) => (
+        <NoteCard note={note} locationById={locationById} erasById={erasById} />
+      ))}
+    </div>
+  </section>
+</BaseLayout>

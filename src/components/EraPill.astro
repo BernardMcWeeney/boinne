@@ -1,0 +1,30 @@
+---
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  era: CollectionEntry<"eras">;
+  linked?: boolean;
+}
+
+const { era, linked = true } = Astro.props;
+const hue = era.data.color;
+---
+
+{
+  linked ? (
+    <a
+      href={`/eras/${era.slug}/`}
+      class="inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.08em]"
+      style={`border-color:${hue}; color:${hue}; background-color:${hue}1f;`}
+    >
+      {era.data.name}
+    </a>
+  ) : (
+    <span
+      class="inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.08em]"
+      style={`border-color:${hue}; color:${hue}; background-color:${hue}1f;`}
+    >
+      {era.data.name}
+    </span>
+  )
+}

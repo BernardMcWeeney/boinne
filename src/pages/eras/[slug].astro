@@ -1,0 +1,81 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { getCollection, render } from "astro:content";
+import EraPill from "../../components/EraPill.astro";
+import LocationCard from "../../components/LocationCard.astro";
+import NoteCard from "../../components/NoteCard.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+export async function getStaticPaths() {
+  const eras = await getCollection("eras");
+
+  return eras.map((era) => ({
+    params: { slug: era.slug },
+    props: { era },
+  }));
+}
+
+const { era } = Astro.props as { era: CollectionEntry<"eras"> };
+const { Content } = await render(era);
+
+const [allEras, allLocations, allNotes] = await Promise.all([
+  getCollection("eras"),
+  getCollection("locations"),
+  getCollection("posts"),
+]);
+
+const erasById = new Map(allEras.map((entry) => [entry.id, entry]));
+const locationById = new Map(allLocations.map((location) => [location.id, location]));
+
+const notesForEra = [...allNotes]
+  .filter((note) => note.data.eras.some((noteEra) => noteEra.id === era.id))
+  .sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime());
+
+const locationsForEra = allLocations.filter((location) =>
+  location.data.eras.some((locationEra) => locationEra.id === era.id),
+);
+
+const noteCounts = notesForEra.reduce<Record<string, number>>((acc, note) => {
+  const key = note.data.location.id;
+  acc[key] = (acc[key] ?? 0) + 1;
+  return acc;
+}, {});
+---
+
+<BaseLayout title={`${era.data.name} | Bóinne`} description={era.data.summary} image={era.data.featuredImage}>
+  <section class="section-shell mt-10 space-y-6 sm:mt-12">
+    <div class="glass-card p-6 sm:p-8">
+      <EraPill era={era} linked={false} />
+      <h1 class="mt-4 text-5xl text-stone-900 sm:text-6xl">{era.data.name}</h1>
+      <p class="mt-2 text-xs font-semibold uppercase tracking-[0.08em] text-stone-600">{era.data.span}</p>
+      <p class="mt-4 max-w-3xl text-sm text-stone-700 sm:text-base">{era.data.summary}</p>
+      <div class="mt-6 space-y-4 text-sm text-stone-700 sm:text-base">
+        <Content />
+      </div>
+    </div>
+  </section>
+
+  <section class="section-shell mt-12 space-y-5">
+    <h2 class="text-4xl text-stone-900">Locations in this Era</h2>
+    <div class="grid gap-6 md:grid-cols-2">
+      {locationsForEra.map((location) => (
+        <LocationCard location={location} erasById={erasById} noteCount={noteCounts[location.id] ?? 0} />
+      ))}
+    </div>
+  </section>
+
+  <section class="section-shell mt-12 pb-4">
+    <h2 class="text-4xl text-stone-900">Related Field Notes</h2>
+    {
+      notesForEra.length ? (
+        <div class="mt-5 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {notesForEra.map((note) => (
+            <NoteCard note={note} locationById={locationById} erasById={erasById} />
+          ))}
+        </div>
+      ) : (
+        <article class="glass-card mt-4 p-6 text-sm text-stone-700">No notes yet linked to this era.</article>
+      )
+    }
+  </section>
+</BaseLayout>

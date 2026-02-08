@@ -1,0 +1,18 @@
+<svg width="1800" height="900" viewBox="0 0 1800 900" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Boyne Valley landscape illustration">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#CFDEE8"/>
+      <stop offset="1" stop-color="#F6EBD9"/>
+    </linearGradient>
+    <linearGradient id="river" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#6EA1AE"/>
+      <stop offset="1" stop-color="#4D7A89"/>
+    </linearGradient>
+  </defs>
+  <rect width="1800" height="900" fill="url(#sky)"/>
+  <path d="M0 470C230 410 420 510 650 450C860 400 1020 530 1260 470C1490 410 1650 490 1800 440V900H0V470Z" fill="#748460"/>
+  <path d="M0 560C240 530 380 660 620 620C850 590 990 680 1190 650C1410 620 1620 700 1800 660V900H0V560Z" fill="#5F6B4A"/>
+  <path d="M0 640C210 600 380 760 600 720C810 690 980 780 1170 750C1380 720 1590 790 1800 760V900H0V640Z" fill="#49513A"/>
+  <path d="M30 620C220 690 390 590 560 640C740 700 930 600 1120 660C1300 720 1460 640 1760 700" stroke="url(#river)" stroke-width="42" stroke-linecap="round"/>
+  <circle cx="1450" cy="200" r="78" fill="#F8F0CC" fill-opacity="0.85"/>
+</svg>

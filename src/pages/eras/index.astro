@@ -1,0 +1,61 @@
+---
+import { getCollection } from "astro:content";
+import EraPill from "../../components/EraPill.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+const [eras, locations, notes] = await Promise.all([
+  getCollection("eras"),
+  getCollection("locations"),
+  getCollection("posts"),
+]);
+
+const erasSorted = [...eras].sort((a, b) => a.data.order - b.data.order);
+
+const stats = erasSorted.map((era) => {
+  const locationCount = locations.filter((location) =>
+    location.data.eras.some((locationEra) => locationEra.id === era.id),
+  ).length;
+
+  const noteCount = notes.filter((note) => note.data.eras.some((noteEra) => noteEra.id === era.id)).length;
+
+  return {
+    era,
+    locationCount,
+    noteCount,
+  };
+});
+---
+
+<BaseLayout title="Eras | Bóinne" description="Chronological index for all eras represented in the Boyne Valley archive.">
+  <section class="section-shell mt-10 space-y-5 sm:mt-12">
+    <p class="chip">Eras</p>
+    <h1 class="text-5xl text-stone-900 sm:text-6xl">Timeline Model</h1>
+    <p class="max-w-3xl text-sm text-stone-700 sm:text-base">
+      Each location can belong to multiple eras, and each note can link to several eras at once. This supports layered
+      history instead of a one-period-per-site model.
+    </p>
+  </section>
+
+  <section class="section-shell mt-8 pb-4">
+    <div class="space-y-4">
+      {stats.map(({ era, locationCount, noteCount }) => (
+        <article class="glass-card p-6 sm:p-7">
+          <div class="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <h2 class="text-4xl text-stone-900">
+                <a href={`/eras/${era.slug}/`}>{era.data.name}</a>
+              </h2>
+              <p class="text-xs font-semibold uppercase tracking-[0.08em] text-stone-600">{era.data.span}</p>
+            </div>
+            <EraPill era={era} linked={false} />
+          </div>
+          <p class="mt-3 max-w-3xl text-sm text-stone-700">{era.data.summary}</p>
+          <div class="mt-4 flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-[0.08em] text-stone-600">
+            <span class="chip">{locationCount} locations</span>
+            <span class="chip">{noteCount} notes</span>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,40 @@
+---
+import type { CollectionEntry } from "astro:content";
+import EraPill from "./EraPill.astro";
+
+interface Props {
+  note: CollectionEntry<"posts">;
+  locationById: Map<string, CollectionEntry<"locations">>;
+  erasById: Map<string, CollectionEntry<"eras">>;
+}
+
+const { note, locationById, erasById } = Astro.props;
+
+const noteLocation = locationById.get(note.data.location.id);
+const noteEras = note.data.eras
+  .map((ref) => erasById.get(ref.id))
+  .filter((era): era is CollectionEntry<"eras"> => Boolean(era));
+---
+
+<article class="glass-card flex h-full flex-col gap-4 p-5">
+  <img
+    src={note.data.heroImage}
+    alt={note.data.title}
+    class="landscape-frame h-44 w-full object-cover"
+    loading="lazy"
+  />
+  <div class="space-y-2">
+    <p class="text-xs font-semibold uppercase tracking-[0.1em] text-stone-600">
+      {noteLocation ? noteLocation.data.name : "Unknown location"}
+      • {note.data.publishedAt.toLocaleDateString("en-IE", { dateStyle: "long" })}
+    </p>
+    <h3 class="text-3xl leading-tight text-stone-900">{note.data.title}</h3>
+    <p class="text-sm text-stone-700">{note.data.excerpt}</p>
+  </div>
+  <div class="flex flex-wrap gap-2">
+    {noteEras.map((era) => <EraPill era={era} />)}
+  </div>
+  <a href={`/notes/${note.slug}/`} class="mt-auto text-sm font-semibold text-river underline decoration-2 underline-offset-4">
+    Read note
+  </a>
+</article>

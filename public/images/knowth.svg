@@ -1,0 +1,16 @@
+<svg width="1400" height="760" viewBox="0 0 1400 760" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Knowth inspired landscape illustration">
+  <defs>
+    <linearGradient id="bgk" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#C9D8DE"/>
+      <stop offset="1" stop-color="#EFE7D8"/>
+    </linearGradient>
+  </defs>
+  <rect width="1400" height="760" fill="url(#bgk)"/>
+  <path d="M0 470C190 430 380 520 560 470C730 420 900 520 1120 480C1240 460 1330 480 1400 500V760H0V470Z" fill="#708060"/>
+  <ellipse cx="660" cy="525" rx="320" ry="130" fill="#8E7D5A"/>
+  <ellipse cx="660" cy="530" rx="265" ry="102" fill="#BDA87D"/>
+  <ellipse cx="440" cy="560" rx="55" ry="30" fill="#B89E75"/>
+  <ellipse cx="860" cy="570" rx="70" ry="34" fill="#B89E75"/>
+  <path d="M390 530H930" stroke="#E2D4B9" stroke-width="6" stroke-dasharray="6 14"/>
+  <circle cx="1040" cy="180" r="64" fill="#FAEFC9" fill-opacity="0.85"/>
+</svg>

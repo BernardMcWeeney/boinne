@@ -1,0 +1,17 @@
+<svg width="1400" height="760" viewBox="0 0 1400 760" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Slane Castle inspired landscape illustration">
+  <defs>
+    <linearGradient id="bgs" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#CCD6DF"/>
+      <stop offset="1" stop-color="#F1E7DA"/>
+    </linearGradient>
+  </defs>
+  <rect width="1400" height="760" fill="url(#bgs)"/>
+  <path d="M0 510C190 470 350 550 580 520C760 500 940 560 1160 530C1260 520 1340 540 1400 560V760H0V510Z" fill="#68775A"/>
+  <path d="M510 420H880V560H510V420Z" fill="#7E6E5A"/>
+  <rect x="548" y="390" width="70" height="170" fill="#6A5E4E"/>
+  <rect x="772" y="390" width="70" height="170" fill="#6A5E4E"/>
+  <rect x="628" y="455" width="132" height="105" fill="#594E40"/>
+  <rect x="666" y="490" width="56" height="70" fill="#2D2A28"/>
+  <path d="M0 620C240 580 370 680 590 640C810 600 990 700 1210 670C1300 660 1360 670 1400 680" stroke="#4A7482" stroke-width="18" stroke-linecap="round" opacity="0.7"/>
+  <circle cx="1100" cy="170" r="68" fill="#F8EDC9" fill-opacity="0.86"/>
+</svg>
