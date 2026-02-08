@@ -1,0 +1,35 @@
+---
+interface Props {
+  crumbs: Array<{ label: string; href?: string }>;
+  variant?: 'light' | 'dark';
+}
+
+const { crumbs, variant = 'dark' } = Astro.props;
+---
+
+<nav class:list={['breadcrumbs', variant === 'light' && 'breadcrumbs-light']}>
+  {crumbs.map((crumb, i) => (
+    <>
+      {i > 0 && <span class="separator">/</span>}
+      {crumb.href
+        ? <a href={crumb.href}>{crumb.label}</a>
+        : <span class="current">{crumb.label}</span>
+      }
+    </>
+  ))}
+</nav>
+
+<style>
+  .breadcrumbs-light a {
+    color: rgba(255, 255, 255, 0.4);
+  }
+  .breadcrumbs-light a:hover {
+    color: #ffd54f;
+  }
+  .breadcrumbs-light .separator {
+    color: rgba(255, 255, 255, 0.15);
+  }
+  .breadcrumbs-light .current {
+    color: rgba(255, 255, 255, 0.6);
+  }
+</style>

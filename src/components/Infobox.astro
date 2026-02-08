@@ -1,0 +1,30 @@
+---
+interface Props {
+  title?: string;
+  gradient?: string;
+  rows: Array<{ label: string; value: string; href?: string }>;
+}
+
+const { title = 'Details', gradient, rows } = Astro.props;
+---
+
+<aside class="infobox">
+  {gradient && <div class="infobox-accent" style={`background: ${gradient};`} />}
+  <p class="infobox-title">{title}</p>
+  {rows.map(row => (
+    <div class="infobox-row">
+      <span class="infobox-label">{row.label}</span>
+      <span class="infobox-value">
+        {row.href
+          ? <a href={row.href}>{row.value}</a>
+          : row.value
+        }
+      </span>
+    </div>
+  ))}
+  {Astro.slots.has('default') && (
+    <div class="infobox-footer">
+      <slot />
+    </div>
+  )}
+</aside>

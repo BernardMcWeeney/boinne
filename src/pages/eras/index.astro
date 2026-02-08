@@ -1,6 +1,8 @@
 ---
 import { getCollection } from "astro:content";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getEraGradient, getEraAccentColor } from "../../lib/images";
 
 const [eras, locations, notes] = await Promise.all([
   getCollection("eras"),
@@ -22,9 +24,14 @@ const stats = erasSorted.map((era) => {
 ---
 
 <BaseLayout title="Eras | Bóinne" description="Chronological index for all eras represented in the Boyne Valley.">
-  <!-- Dark header area -->
   <section class="bg-dark pt-28 pb-16 px-6">
-    <div class="max-w-3xl mx-auto">
+    <div class="max-w-5xl mx-auto">
+      <div class="mb-6">
+        <Breadcrumbs crumbs={[
+          { label: 'Home', href: '/' },
+          { label: 'Eras' },
+        ]} variant="light" />
+      </div>
       <p class="text-[11px] font-semibold uppercase tracking-wider text-gold/50 mb-3">Chronology</p>
       <h1 class="font-display text-4xl sm:text-5xl font-bold text-white">Through the Ages</h1>
       <p class="mt-4 text-base text-white/40 leading-relaxed max-w-xl">
@@ -34,23 +41,34 @@ const stats = erasSorted.map((era) => {
     </div>
   </section>
 
-  <!-- Timeline -->
   <section class="px-6 py-16">
-    <div class="max-w-3xl mx-auto">
-      <div class="timeline">
+    <div class="max-w-5xl mx-auto">
+      <div class="space-y-4">
         {stats.map(({ era, locationCount, noteCount }) => (
-          <div class="timeline-entry reveal">
-            <p class="text-[11px] font-semibold uppercase tracking-wider text-stone-400 mb-1">{era.data.span}</p>
-            <h2 class="font-display text-2xl font-bold text-stone-900">
-              <a href={`/eras/${era.slug}/`} class="hover:text-gold-dim transition-colors">{era.data.name}</a>
-            </h2>
-            <p class="mt-2 text-sm text-stone-500 leading-relaxed">{era.data.summary}</p>
-            <div class="mt-3 flex items-center gap-4 text-xs text-stone-400">
-              <span>{locationCount} {locationCount === 1 ? 'site' : 'sites'}</span>
-              <span class="w-1 h-1 rounded-full bg-stone-300" />
-              <span>{noteCount} {noteCount === 1 ? 'entry' : 'entries'}</span>
+          <a
+            href={`/eras/${era.slug}/`}
+            class="group block rounded-xl overflow-hidden border border-stone-200 hover:border-stone-300 transition-all hover:shadow-lg"
+          >
+            <div class="flex flex-col sm:flex-row">
+              <div class="sm:w-48 h-32 sm:h-auto relative placeholder-shimmer flex-shrink-0" style={`background: ${getEraGradient(era.slug)};`}>
+                <div class="absolute inset-0 flex items-center justify-center">
+                  <span class="text-white/60 text-xs font-semibold uppercase tracking-wider">{era.data.span}</span>
+                </div>
+              </div>
+              <div class="flex-1 p-6">
+                <h2 class="font-display text-xl font-bold text-stone-900 group-hover:text-gold-dim transition-colors">{era.data.name}</h2>
+                <p class="mt-2 text-sm text-stone-500 leading-relaxed">{era.data.summary}</p>
+                <div class="mt-4 flex items-center gap-4 text-xs text-stone-400">
+                  <span class="flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full" style={`background-color: ${getEraAccentColor(era.slug)};`} />
+                    {locationCount} {locationCount === 1 ? 'site' : 'sites'}
+                  </span>
+                  <span class="w-1 h-1 rounded-full bg-stone-300" />
+                  <span>{noteCount} {noteCount === 1 ? 'entry' : 'entries'}</span>
+                </div>
+              </div>
             </div>
-          </div>
+          </a>
         ))}
       </div>
     </div>

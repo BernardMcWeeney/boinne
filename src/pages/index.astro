@@ -4,6 +4,7 @@ import DiscoveryMap from "../components/DiscoveryMap.astro";
 import LocationCard from "../components/LocationCard.astro";
 import NoteCard from "../components/NoteCard.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { getEraAccentColor } from "../lib/images";
 
 const [locations, notes, eras] = await Promise.all([
   getCollection("locations"),
@@ -28,38 +29,36 @@ const noteCounts = notes.reduce<Record<string, number>>((acc, note) => {
 <BaseLayout title="Bóinne | Boyne Valley History">
   <!-- Hero -->
   <section class="relative min-h-screen flex items-center justify-center overflow-hidden vignette"
-    style="background: linear-gradient(145deg, #0f0f1a 0%, #1a1a2e 25%, #16213e 50%, #0f3460 75%, #1a1a2e 100%);"
+    style="background: linear-gradient(145deg, #050510 0%, #0a0a1a 15%, #1a1a2e 35%, #16213e 55%, #0f3460 75%, #1a1a2e 100%);"
   >
-    <div class="absolute inset-0 opacity-15" style="background-image: radial-gradient(circle at 25% 50%, rgba(255,213,79,0.15), transparent 50%), radial-gradient(circle at 75% 40%, rgba(59,130,246,0.08), transparent 50%);"></div>
-    <div class="relative z-10 text-center px-6 max-w-3xl mx-auto">
-      <p class="text-gold/60 text-xs font-semibold uppercase tracking-[0.3em] mb-8">Brú na Bóinne, Ireland</p>
-      <h1 class="font-display text-7xl sm:text-8xl md:text-9xl font-black text-white leading-[0.85] tracking-tight">
+    <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(circle at 25% 50%, rgba(255,213,79,0.12), transparent 50%), radial-gradient(circle at 75% 40%, rgba(99,102,241,0.08), transparent 50%), radial-gradient(circle at 50% 80%, rgba(255,213,79,0.05), transparent 40%);"></div>
+    <div class="relative z-10 text-center px-6 max-w-4xl mx-auto">
+      <p class="text-gold/50 text-xs font-semibold uppercase tracking-[0.35em] mb-10">Brú na Bóinne &middot; Ireland</p>
+      <h1 class="font-display text-7xl sm:text-8xl md:text-[10rem] font-black text-white leading-[0.85] tracking-tight">
         Bóinne
       </h1>
-      <p class="mt-8 text-base sm:text-lg text-white/50 max-w-xl mx-auto leading-relaxed font-light">
-        Five thousand years of history carved into the landscape of County Meath.
-        A personal exploration of Ireland's most ancient valley.
+      <p class="mt-10 text-base sm:text-lg text-white/40 max-w-2xl mx-auto leading-relaxed font-light">
+        An immersive wiki exploring five thousand years of history carved into the landscape of County Meath — from Neolithic passage tombs to medieval fortifications.
       </p>
       <div class="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
-        <a href="#introduction" class="inline-flex items-center gap-2 px-6 py-3 bg-gold/90 hover:bg-gold text-dark font-semibold text-sm rounded-full transition-colors">
-          Explore the Story
+        <a href="#introduction" class="inline-flex items-center gap-2 px-7 py-3.5 bg-gold/90 hover:bg-gold text-dark font-semibold text-sm rounded-full transition-colors">
+          Begin Exploring
         </a>
-        <a href="/map/" class="inline-flex items-center gap-2 px-6 py-3 bg-white/5 hover:bg-white/10 text-white/70 hover:text-white font-medium text-sm rounded-full border border-white/10 hover:border-white/20 transition-all">
+        <a href="/map/" class="inline-flex items-center gap-2 px-7 py-3.5 bg-white/5 hover:bg-white/10 text-white/60 hover:text-white font-medium text-sm rounded-full border border-white/10 hover:border-white/20 transition-all">
           View Map
         </a>
       </div>
     </div>
-    <!-- Scroll indicator -->
-    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/20">
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/15">
       <span class="text-[10px] uppercase tracking-widest">Scroll</span>
-      <div class="w-px h-8 bg-gradient-to-b from-white/20 to-transparent"></div>
+      <div class="w-px h-10 bg-gradient-to-b from-white/15 to-transparent"></div>
     </div>
   </section>
 
   <!-- Introduction -->
-  <section id="introduction" class="px-6 py-24">
+  <section id="introduction" class="px-6 py-28">
     <div class="max-w-3xl mx-auto reveal">
-      <p class="text-lg sm:text-xl text-stone-600 leading-relaxed font-light">
+      <p class="text-lg sm:text-xl text-stone-600 leading-[1.9] font-light">
         Nestled in the bend of the River Boyne, the <strong class="font-semibold text-stone-800">Brú na Bóinne</strong> complex
         stands as one of the most important archaeological landscapes in the world.
         Older than the Egyptian pyramids, these monuments — Newgrange, Knowth, and Dowth —
@@ -70,8 +69,8 @@ const noteCounts = notes.reduce<Record<string, number>>((acc, note) => {
   </section>
 
   <!-- Key Facts -->
-  <section class="px-6 pb-20">
-    <div class="max-w-4xl mx-auto reveal">
+  <section class="px-6 pb-24">
+    <div class="max-w-5xl mx-auto reveal">
       <div class="facts-grid">
         <div class="fact">
           <p class="fact-label">Age</p>
@@ -107,21 +106,41 @@ const noteCounts = notes.reduce<Record<string, number>>((acc, note) => {
     </div>
   </section>
 
+  <!-- Sites -->
+  <section class="px-6 py-24 bg-surface-warm">
+    <div class="max-w-5xl mx-auto">
+      <div class="flex items-end justify-between mb-10 reveal">
+        <div>
+          <p class="text-[11px] font-semibold uppercase tracking-wider text-stone-400 mb-2">Discover</p>
+          <h2 class="font-display text-3xl sm:text-4xl font-bold text-stone-900">Ancient Sites</h2>
+        </div>
+        <a href="/locations/" class="hidden sm:inline-flex items-center gap-1.5 text-sm text-stone-400 hover:text-stone-700 transition-colors">
+          All locations &rarr;
+        </a>
+      </div>
+      <div class="card-grid reveal">
+        {locationsSorted.map(loc => (
+          <LocationCard location={loc} erasById={erasById} noteCount={noteCounts[loc.id] ?? 0} />
+        ))}
+      </div>
+    </div>
+  </section>
+
   <!-- Timeline -->
-  <section class="px-6 py-20 bg-surface-warm">
+  <section class="px-6 py-24">
     <div class="max-w-3xl mx-auto">
       <div class="reveal">
-        <p class="text-[11px] font-semibold uppercase tracking-wider text-stone-400 mb-2">Timeline</p>
-        <h2 class="font-display text-3xl font-bold text-stone-900 mb-10">Through the Ages</h2>
+        <p class="text-[11px] font-semibold uppercase tracking-wider text-stone-400 mb-2">Chronology</p>
+        <h2 class="font-display text-3xl sm:text-4xl font-bold text-stone-900 mb-12">Through the Ages</h2>
       </div>
       <div class="timeline reveal">
         {erasSorted.map(era => (
-          <div class="timeline-entry">
+          <div class="timeline-entry" style={`--dot-color: ${getEraAccentColor(era.slug)};`}>
             <p class="text-[11px] font-semibold uppercase tracking-wider text-stone-400 mb-1">{era.data.span}</p>
             <h3 class="font-display text-xl font-bold text-stone-900">
               <a href={`/eras/${era.slug}/`} class="hover:text-gold-dim transition-colors">{era.data.name}</a>
             </h3>
-            <p class="mt-1.5 text-sm text-stone-500 leading-relaxed max-w-xl">{era.data.summary}</p>
+            <p class="mt-2 text-sm text-stone-500 leading-relaxed max-w-xl">{era.data.summary}</p>
           </div>
         ))}
       </div>
@@ -134,57 +153,37 @@ const noteCounts = notes.reduce<Record<string, number>>((acc, note) => {
     </div>
   </section>
 
-  <!-- Sites -->
-  <section class="px-6 py-20">
-    <div class="max-w-3xl mx-auto">
-      <div class="flex items-end justify-between mb-6 reveal">
-        <div>
-          <p class="text-[11px] font-semibold uppercase tracking-wider text-stone-400 mb-2">Discover</p>
-          <h2 class="font-display text-3xl font-bold text-stone-900">Ancient Sites</h2>
-        </div>
-        <a href="/locations/" class="hidden sm:inline-flex items-center gap-1.5 text-sm text-stone-400 hover:text-stone-700 transition-colors">
-          All locations &rarr;
-        </a>
-      </div>
-      <div class="reveal">
-        {locationsSorted.map(loc => (
-          <LocationCard location={loc} erasById={erasById} noteCount={noteCounts[loc.id] ?? 0} />
-        ))}
-      </div>
-    </div>
-  </section>
-
   <!-- Map -->
-  <section class="px-6 py-20 bg-dark">
-    <div class="max-w-5xl mx-auto">
-      <div class="flex items-end justify-between mb-8 reveal">
+  <section class="bg-dark">
+    <div class="max-w-7xl mx-auto px-6 py-24">
+      <div class="flex items-end justify-between mb-10 reveal">
         <div>
-          <p class="text-[11px] font-semibold uppercase tracking-wider text-gold/50 mb-2">Navigate</p>
-          <h2 class="font-display text-3xl font-bold text-white">The Valley</h2>
+          <p class="text-[11px] font-semibold uppercase tracking-wider text-gold/40 mb-2">Navigate</p>
+          <h2 class="font-display text-3xl sm:text-4xl font-bold text-white">The Valley</h2>
         </div>
-        <a href="/map/" class="hidden sm:inline-flex items-center gap-1.5 text-sm text-white/40 hover:text-gold transition-colors">
+        <a href="/map/" class="hidden sm:inline-flex items-center gap-1.5 text-sm text-white/30 hover:text-gold transition-colors">
           Full map &rarr;
         </a>
       </div>
       <div class="reveal">
-        <DiscoveryMap locations={locationsSorted} noteCounts={noteCounts} height="480px" />
+        <DiscoveryMap locations={locationsSorted} noteCounts={noteCounts} height="500px" />
       </div>
     </div>
   </section>
 
   <!-- Journal -->
-  <section class="px-6 py-20">
-    <div class="max-w-3xl mx-auto">
-      <div class="flex items-end justify-between mb-6 reveal">
+  <section class="px-6 py-24">
+    <div class="max-w-5xl mx-auto">
+      <div class="flex items-end justify-between mb-10 reveal">
         <div>
           <p class="text-[11px] font-semibold uppercase tracking-wider text-stone-400 mb-2">Read</p>
-          <h2 class="font-display text-3xl font-bold text-stone-900">Latest Writings</h2>
+          <h2 class="font-display text-3xl sm:text-4xl font-bold text-stone-900">Latest Writings</h2>
         </div>
         <a href="/notes/" class="hidden sm:inline-flex items-center gap-1.5 text-sm text-stone-400 hover:text-stone-700 transition-colors">
           All entries &rarr;
         </a>
       </div>
-      <div class="reveal">
+      <div class="card-grid reveal">
         {notesSorted.slice(0, 4).map(note => (
           <NoteCard note={note} locationById={locationById} erasById={erasById} />
         ))}
@@ -192,20 +191,21 @@ const noteCounts = notes.reduce<Record<string, number>>((acc, note) => {
     </div>
   </section>
 
-  <!-- CTA -->
-  <section class="px-6 py-24 bg-dark">
-    <div class="max-w-2xl mx-auto text-center reveal">
-      <h2 class="font-display text-3xl sm:text-4xl font-bold text-white">Explore the Full Story</h2>
-      <p class="mt-4 text-white/40 leading-relaxed">
-        Browse every location, trace the timeline from the Neolithic to the present,
-        or read field notes from across the valley.
-      </p>
-      <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
-        <a href="/locations/" class="px-6 py-3 bg-gold/90 hover:bg-gold text-dark font-semibold text-sm rounded-full transition-colors">
-          Browse Locations
+  <!-- Explore Further -->
+  <section class="px-6 py-20 bg-dark">
+    <div class="max-w-4xl mx-auto reveal">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
+        <a href="/locations/" class="group p-8 rounded-xl bg-white/5 hover:bg-white/8 border border-white/5 hover:border-white/10 transition-all">
+          <p class="font-display text-3xl font-bold text-white mb-2">{locations.length}</p>
+          <p class="text-sm text-white/40 group-hover:text-white/60 transition-colors">Locations</p>
         </a>
-        <a href="/notes/" class="px-6 py-3 bg-white/5 hover:bg-white/10 text-white/60 hover:text-white text-sm font-medium rounded-full border border-white/10 hover:border-white/20 transition-all">
-          Read the Journal
+        <a href="/eras/" class="group p-8 rounded-xl bg-white/5 hover:bg-white/8 border border-white/5 hover:border-white/10 transition-all">
+          <p class="font-display text-3xl font-bold text-white mb-2">{eras.length}</p>
+          <p class="text-sm text-white/40 group-hover:text-white/60 transition-colors">Eras</p>
+        </a>
+        <a href="/notes/" class="group p-8 rounded-xl bg-white/5 hover:bg-white/8 border border-white/5 hover:border-white/10 transition-all">
+          <p class="font-display text-3xl font-bold text-white mb-2">{notes.length}</p>
+          <p class="text-sm text-white/40 group-hover:text-white/60 transition-colors">Journal Entries</p>
         </a>
       </div>
     </div>

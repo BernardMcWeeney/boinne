@@ -3,6 +3,8 @@ import type { CollectionEntry } from "astro:content";
 import { getCollection, render } from "astro:content";
 import EraPill from "../../components/EraPill.astro";
 import NoteCard from "../../components/NoteCard.astro";
+import Infobox from "../../components/Infobox.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
 import DiscoveryMap from "../../components/DiscoveryMap.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { getLocationGradient } from "../../lib/images";
@@ -42,13 +44,41 @@ const noteCounts = allNotes.reduce<Record<string, number>>((acc, note) => {
 }, {});
 
 const gradient = getLocationGradient(location.slug);
+
+// Find related locations (share at least one era)
+const relatedLocations = allLocations.filter(loc =>
+  loc.id !== location.id &&
+  loc.data.eras.some(locEra =>
+    location.data.eras.some(thisEra => thisEra.id === locEra.id)
+  )
+);
+
+const infoRows = [
+  { label: 'County', value: location.data.county },
+  { label: 'Latitude', value: `${location.data.lat.toFixed(4)}° N` },
+  { label: 'Longitude', value: `${Math.abs(location.data.lng).toFixed(4)}° W` },
+  { label: 'Eras', value: linkedEras.map(e => e.data.name).join(', ') },
+  { label: 'Status', value: location.data.status.charAt(0).toUpperCase() + location.data.status.slice(1) },
+  { label: 'Journal Entries', value: String(notesForLocation.length) },
+];
+
+if (location.data.tags.length > 0) {
+  infoRows.push({ label: 'Tags', value: location.data.tags.join(', ') });
+}
 ---
 
 <BaseLayout title={`${location.data.name} | Bóinne`} description={location.data.teaser}>
   <!-- Hero -->
   <section class="relative min-h-[55vh] flex items-end overflow-hidden vignette placeholder-shimmer" style={`background: ${gradient};`}>
     <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-    <div class="relative z-10 w-full max-w-3xl mx-auto px-6 pb-14 pt-36">
+    <div class="relative z-10 w-full max-w-7xl mx-auto px-6 pb-14 pt-36">
+      <div class="mb-6">
+        <Breadcrumbs crumbs={[
+          { label: 'Home', href: '/' },
+          { label: 'Locations', href: '/locations/' },
+          { label: location.data.name },
+        ]} variant="light" />
+      </div>
       <div class="flex flex-wrap gap-2 mb-4">
         {linkedEras.map(era => (
           <EraPill era={era} variant="light" />
@@ -59,64 +89,58 @@ const gradient = getLocationGradient(location.slug);
     </div>
   </section>
 
-  <!-- Key facts + teaser -->
+  <!-- Article with sidebar -->
   <section class="px-6 py-16">
-    <div class="max-w-3xl mx-auto">
-      <p class="text-lg text-stone-600 leading-relaxed font-light reveal">{location.data.teaser}</p>
-      <div class="mt-8 facts-grid reveal">
-        <div class="fact">
-          <p class="fact-label">Coordinates</p>
-          <p class="fact-value">{location.data.lat.toFixed(4)}° N</p>
-          <p class="fact-detail">{Math.abs(location.data.lng).toFixed(4)}° W</p>
+    <div class="article-grid">
+      <!-- Main content -->
+      <div>
+        <p class="text-lg text-stone-600 leading-relaxed font-light mb-10 reveal">{location.data.teaser}</p>
+        <div class="prose reveal">
+          <Content />
         </div>
-        <div class="fact">
-          <p class="fact-label">County</p>
-          <p class="fact-value">{location.data.county}</p>
-        </div>
-        <div class="fact">
-          <p class="fact-label">Eras</p>
-          <p class="fact-value">{linkedEras.length}</p>
-          <p class="fact-detail">{linkedEras.map(e => e.data.name).join(', ')}</p>
-        </div>
-        <div class="fact">
-          <p class="fact-label">Journal Entries</p>
-          <p class="fact-value">{notesForLocation.length}</p>
-        </div>
+
+        {notesForLocation.length > 0 && (
+          <div class="see-also reveal">
+            <h2 class="see-also-title">Journal Entries from This Site</h2>
+            <div class="card-grid">
+              {notesForLocation.map(note => (
+                <NoteCard note={note} locationById={locationById} erasById={erasById} />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {relatedLocations.length > 0 && (
+          <div class="see-also reveal">
+            <h2 class="see-also-title">See Also</h2>
+            <ul class="space-y-2">
+              {relatedLocations.map(loc => (
+                <li>
+                  <a href={`/locations/${loc.slug}/`} class="text-sm text-amber-800 hover:text-amber-600 transition-colors font-medium">
+                    {loc.data.name}
+                  </a>
+                  <span class="text-xs text-stone-400 ml-2">{loc.data.county}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
+
+      <!-- Sidebar -->
+      <aside class="sidebar-sticky space-y-6">
+        <Infobox title={location.data.name} gradient={gradient} rows={infoRows}>
+          <div class="flex flex-wrap gap-1.5">
+            {linkedEras.map(era => (
+              <EraPill era={era} linked={true} />
+            ))}
+          </div>
+        </Infobox>
+
+        <div class="rounded-xl overflow-hidden border border-stone-200">
+          <DiscoveryMap locations={[location]} noteCounts={noteCounts} height="200px" />
+        </div>
+      </aside>
     </div>
   </section>
-
-  <!-- Content -->
-  <section class="px-6 pb-16">
-    <div class="max-w-3xl mx-auto reveal">
-      <div class="prose">
-        <Content />
-      </div>
-    </div>
-  </section>
-
-  <!-- Map -->
-  <section class="px-6 py-16 bg-dark">
-    <div class="max-w-5xl mx-auto">
-      <p class="text-[11px] font-semibold uppercase tracking-wider text-gold/50 mb-6">Location</p>
-      <div class="reveal">
-        <DiscoveryMap locations={[location]} noteCounts={noteCounts} height="400px" />
-      </div>
-    </div>
-  </section>
-
-  <!-- Notes -->
-  {notesForLocation.length > 0 && (
-    <section class="px-6 py-16">
-      <div class="max-w-3xl mx-auto">
-        <p class="text-[11px] font-semibold uppercase tracking-wider text-stone-400 mb-2">From This Site</p>
-        <h2 class="font-display text-2xl font-bold text-stone-900 mb-8">Journal Entries</h2>
-        <div class="reveal">
-          {notesForLocation.map(note => (
-            <NoteCard note={note} locationById={locationById} erasById={erasById} />
-          ))}
-        </div>
-      </div>
-    </section>
-  )}
 </BaseLayout>

@@ -44,24 +44,26 @@ const navLinks = [
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Inter:wght@300..700&display=swap" rel="stylesheet" />
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="grain min-h-screen flex flex-col">
 
-  <!-- Header — always transparent, solidifies on scroll -->
   <header id="site-header" class="site-header fixed top-0 left-0 right-0 z-50">
-    <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
       <a href="/" class="font-display text-xl font-bold tracking-tight text-white/90 hover:text-gold transition-colors">Bóinne</a>
-      <nav class="hidden md:flex items-center gap-1">
+      <nav class="hidden md:flex items-center gap-0.5">
         {navLinks.map(link => (
           <a
             href={link.href}
             class:list={[
-              'px-4 py-1.5 text-[13px] font-medium rounded-full transition-all duration-200',
+              'relative px-4 py-1.5 text-[13px] font-medium transition-all duration-200',
               currentPath.startsWith(link.href)
-                ? 'text-gold bg-white/10'
-                : 'text-white/60 hover:text-white hover:bg-white/5',
+                ? 'text-white'
+                : 'text-white/50 hover:text-white/80',
             ]}
           >
             {link.label}
+            {currentPath.startsWith(link.href) && (
+              <span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-gold" />
+            )}
           </a>
         ))}
       </nav>
@@ -72,7 +74,7 @@ const navLinks = [
       </button>
     </div>
     <div id="mobile-menu" class="hidden md:hidden bg-dark/95 backdrop-blur-md border-t border-white/5">
-      <nav class="max-w-6xl mx-auto px-6 py-4 flex flex-col gap-1">
+      <nav class="max-w-7xl mx-auto px-6 py-4 flex flex-col gap-1">
         {navLinks.map(link => (
           <a
             href={link.href}
@@ -92,10 +94,9 @@ const navLinks = [
 
   <main class="flex-1"><slot /></main>
 
-  <!-- Footer — dark, reverent -->
   <footer class="bg-dark text-stone-500 mt-auto">
-    <div class="max-w-6xl mx-auto px-6 py-20">
-      <div class="grid grid-cols-1 md:grid-cols-12 gap-12">
+    <div class="max-w-7xl mx-auto px-6 py-16">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-10">
         <div class="md:col-span-5">
           <a href="/" class="font-display text-2xl font-bold text-white/90 hover:text-gold transition-colors">Bóinne</a>
           <p class="mt-4 text-sm leading-relaxed max-w-sm text-stone-400">
@@ -122,32 +123,28 @@ const navLinks = [
           </nav>
         </div>
       </div>
-      <div class="mt-16 pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <p class="text-xs text-stone-600">&copy; {new Date().getFullYear()} Bóinne. All rights reserved.</p>
+      <div class="mt-12 pt-6 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <p class="text-xs text-stone-600">&copy; {new Date().getFullYear()} Bóinne</p>
         <p class="text-xs text-stone-600 italic">Made with quiet reverence for ancient places.</p>
       </div>
     </div>
   </footer>
 
-  <!-- Back to top -->
   <button id="back-to-top" class="fixed bottom-6 right-6 z-40 w-10 h-10 rounded-full bg-dark-soft/80 backdrop-blur border border-white/10 text-white/50 hover:text-gold hover:border-gold/30 transition-all opacity-0 pointer-events-none" aria-label="Back to top">
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mx-auto"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" /></svg>
   </button>
 
   <script>
-    // Mobile menu
     document.getElementById('menu-toggle')?.addEventListener('click', () => {
       document.getElementById('mobile-menu')?.classList.toggle('hidden');
     });
 
-    // Header scroll effect
     const header = document.getElementById('site-header');
     window.addEventListener('scroll', () => {
       if (window.scrollY > 50) header?.classList.add('scrolled');
       else header?.classList.remove('scrolled');
     }, { passive: true });
 
-    // Scroll-reveal
     const reveals = document.querySelectorAll('.reveal');
     if (reveals.length) {
       const observer = new IntersectionObserver((entries) => {
@@ -161,7 +158,6 @@ const navLinks = [
       reveals.forEach(el => observer.observe(el));
     }
 
-    // Back to top
     const btt = document.getElementById('back-to-top');
     window.addEventListener('scroll', () => {
       if (window.scrollY > 500) {

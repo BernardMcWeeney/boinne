@@ -1,6 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import LocationCard from "../../components/LocationCard.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 
 const [locations, notes, eras] = await Promise.all([
@@ -20,9 +21,14 @@ const sortedLocations = [...locations].sort((a, b) => a.data.name.localeCompare(
 ---
 
 <BaseLayout title="Locations | Bóinne" description="Explore the ancient sites of the Boyne Valley">
-  <!-- Dark header area -->
   <section class="bg-dark pt-28 pb-16 px-6">
-    <div class="max-w-3xl mx-auto">
+    <div class="max-w-5xl mx-auto">
+      <div class="mb-6">
+        <Breadcrumbs crumbs={[
+          { label: 'Home', href: '/' },
+          { label: 'Locations' },
+        ]} variant="light" />
+      </div>
       <p class="text-[11px] font-semibold uppercase tracking-wider text-gold/50 mb-3">Site Register</p>
       <h1 class="font-display text-4xl sm:text-5xl font-bold text-white">Locations</h1>
       <p class="mt-4 text-base text-white/40 leading-relaxed max-w-xl">
@@ -33,10 +39,12 @@ const sortedLocations = [...locations].sort((a, b) => a.data.name.localeCompare(
   </section>
 
   <section class="px-6 py-16">
-    <div class="max-w-3xl mx-auto">
-      {sortedLocations.map(loc => (
-        <LocationCard location={loc} erasById={erasById} noteCount={noteCounts[loc.id] ?? 0} />
-      ))}
+    <div class="max-w-5xl mx-auto">
+      <div class="card-grid">
+        {sortedLocations.map(loc => (
+          <LocationCard location={loc} erasById={erasById} noteCount={noteCounts[loc.id] ?? 0} />
+        ))}
+      </div>
     </div>
   </section>
 </BaseLayout>

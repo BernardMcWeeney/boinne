@@ -1,6 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import NoteCard from "../../components/NoteCard.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 
 const [notes, locations, eras] = await Promise.all([
@@ -15,9 +16,14 @@ const erasById = new Map(eras.map((e) => [e.id, e]));
 ---
 
 <BaseLayout title="Journal | Bóinne" description="Writings and explorations across the Boyne Valley">
-  <!-- Dark header area -->
   <section class="bg-dark pt-28 pb-16 px-6">
-    <div class="max-w-3xl mx-auto">
+    <div class="max-w-5xl mx-auto">
+      <div class="mb-6">
+        <Breadcrumbs crumbs={[
+          { label: 'Home', href: '/' },
+          { label: 'Journal' },
+        ]} variant="light" />
+      </div>
       <p class="text-[11px] font-semibold uppercase tracking-wider text-gold/50 mb-3">Field Notes</p>
       <h1 class="font-display text-4xl sm:text-5xl font-bold text-white">Journal</h1>
       <p class="mt-4 text-base text-white/40 leading-relaxed max-w-xl">
@@ -28,10 +34,12 @@ const erasById = new Map(eras.map((e) => [e.id, e]));
   </section>
 
   <section class="px-6 py-16">
-    <div class="max-w-3xl mx-auto">
-      {notesSorted.map(note => (
-        <NoteCard note={note} locationById={locationById} erasById={erasById} />
-      ))}
+    <div class="max-w-5xl mx-auto">
+      <div class="card-grid">
+        {notesSorted.map(note => (
+          <NoteCard note={note} locationById={locationById} erasById={erasById} />
+        ))}
+      </div>
     </div>
   </section>
 </BaseLayout>

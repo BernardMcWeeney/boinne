@@ -3,6 +3,8 @@ import type { CollectionEntry } from "astro:content";
 import { getCollection, render } from "astro:content";
 import LocationCard from "../../components/LocationCard.astro";
 import NoteCard from "../../components/NoteCard.astro";
+import Infobox from "../../components/Infobox.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { getEraGradient } from "../../lib/images";
 
@@ -41,13 +43,32 @@ const noteCounts = allNotes.reduce<Record<string, number>>((acc, note) => {
 }, {});
 
 const gradient = getEraGradient(era.slug);
+
+// Find adjacent eras for navigation
+const sortedEras = [...allEras].sort((a, b) => a.data.order - b.data.order);
+const currentIndex = sortedEras.findIndex(e => e.id === era.id);
+const prevEra = currentIndex > 0 ? sortedEras[currentIndex - 1] : null;
+const nextEra = currentIndex < sortedEras.length - 1 ? sortedEras[currentIndex + 1] : null;
+
+const infoRows = [
+  { label: 'Period', value: era.data.span },
+  { label: 'Sites', value: String(locationsForEra.length) },
+  { label: 'Journal Entries', value: String(notesForEra.length) },
+];
 ---
 
 <BaseLayout title={`${era.data.name} | Bóinne`} description={era.data.summary}>
   <!-- Hero -->
   <section class="relative min-h-[50vh] flex items-end overflow-hidden vignette placeholder-shimmer" style={`background: ${gradient};`}>
     <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-    <div class="relative z-10 w-full max-w-3xl mx-auto px-6 pb-14 pt-36">
+    <div class="relative z-10 w-full max-w-7xl mx-auto px-6 pb-14 pt-36">
+      <div class="mb-6">
+        <Breadcrumbs crumbs={[
+          { label: 'Home', href: '/' },
+          { label: 'Eras', href: '/eras/' },
+          { label: era.data.name },
+        ]} variant="light" />
+      </div>
       <p class="text-[11px] font-semibold uppercase tracking-wider text-gold/70 mb-3">{era.data.span}</p>
       <h1 class="font-display text-4xl sm:text-5xl md:text-6xl font-bold text-white">{era.data.name}</h1>
       <div class="mt-4 flex items-center gap-4 text-sm text-white/30">
@@ -58,43 +79,69 @@ const gradient = getEraGradient(era.slug);
     </div>
   </section>
 
-  <!-- Summary + Content -->
+  <!-- Article with sidebar -->
   <section class="px-6 py-16">
-    <div class="max-w-3xl mx-auto">
-      <p class="text-lg text-stone-600 leading-relaxed font-light reveal">{era.data.summary}</p>
-      <div class="mt-10 prose reveal">
-        <Content />
+    <div class="article-grid">
+      <!-- Main content -->
+      <div>
+        <p class="text-lg text-stone-600 leading-relaxed font-light mb-10 reveal">{era.data.summary}</p>
+        <div class="prose reveal">
+          <Content />
+        </div>
+
+        {locationsForEra.length > 0 && (
+          <div class="see-also reveal">
+            <h2 class="see-also-title">Sites from This Era</h2>
+            <div class="card-grid">
+              {locationsForEra.map((location) => (
+                <LocationCard location={location} erasById={erasById} noteCount={noteCounts[location.id] ?? 0} />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {notesForEra.length > 0 && (
+          <div class="see-also reveal">
+            <h2 class="see-also-title">Journal Entries</h2>
+            <div class="card-grid">
+              {notesForEra.map((note) => (
+                <NoteCard note={note} locationById={locationById} erasById={erasById} />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
+
+      <!-- Sidebar -->
+      <aside class="sidebar-sticky space-y-6">
+        <Infobox title={era.data.name} gradient={gradient} rows={infoRows} />
+
+        <!-- Era navigation -->
+        <div class="space-y-2">
+          {prevEra && (
+            <a href={`/eras/${prevEra.slug}/`} class="group flex items-center gap-3 p-3 bg-white border border-stone-200 rounded-lg hover:border-stone-300 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3 text-stone-400 flex-shrink-0">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+              </svg>
+              <div class="min-w-0">
+                <p class="text-[10px] font-semibold uppercase tracking-wider text-stone-400">Previous Era</p>
+                <p class="text-sm font-medium text-stone-700 group-hover:text-gold-dim transition-colors truncate">{prevEra.data.name}</p>
+              </div>
+            </a>
+          )}
+          {nextEra && (
+            <a href={`/eras/${nextEra.slug}/`} class="group flex items-center justify-between gap-3 p-3 bg-white border border-stone-200 rounded-lg hover:border-stone-300 transition-colors">
+              <div class="min-w-0">
+                <p class="text-[10px] font-semibold uppercase tracking-wider text-stone-400">Next Era</p>
+                <p class="text-sm font-medium text-stone-700 group-hover:text-gold-dim transition-colors truncate">{nextEra.data.name}</p>
+              </div>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3 text-stone-400 flex-shrink-0">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+              </svg>
+            </a>
+          )}
+        </div>
+      </aside>
     </div>
   </section>
-
-  <!-- Locations -->
-  {locationsForEra.length > 0 && (
-    <section class="px-6 py-16 bg-surface-warm">
-      <div class="max-w-3xl mx-auto">
-        <p class="text-[11px] font-semibold uppercase tracking-wider text-stone-400 mb-2">Sites</p>
-        <h2 class="font-display text-2xl font-bold text-stone-900 mb-6">Locations in this Era</h2>
-        <div class="reveal">
-          {locationsForEra.map((location) => (
-            <LocationCard location={location} erasById={erasById} noteCount={noteCounts[location.id] ?? 0} />
-          ))}
-        </div>
-      </div>
-    </section>
-  )}
-
-  <!-- Notes -->
-  {notesForEra.length > 0 && (
-    <section class="px-6 py-16">
-      <div class="max-w-3xl mx-auto">
-        <p class="text-[11px] font-semibold uppercase tracking-wider text-stone-400 mb-2">Read</p>
-        <h2 class="font-display text-2xl font-bold text-stone-900 mb-6">Journal Entries</h2>
-        <div class="reveal">
-          {notesForEra.map((note) => (
-            <NoteCard note={note} locationById={locationById} erasById={erasById} />
-          ))}
-        </div>
-      </div>
-    </section>
-  )}
 </BaseLayout>
